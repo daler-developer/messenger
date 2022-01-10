@@ -1,0 +1,133 @@
+.home-page {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 10px;
+    height: 50px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
+  }
+  &__title {
+    font-size: 18px;
+    font-weight: 900;
+    color: rgb(34, 34, 59);
+  }
+  &__logo {
+    height: 80%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+  }
+  &__menu-wrapper {
+    @include flex-center;
+    position: relative;
+  }
+  &__open-menu-btn {
+    font-size: 22px;
+  }
+  &__menu {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+  }
+  &__menu-btn {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 10px;
+    font-size: 15.5px;
+    color: rgb(100, 99, 105);
+    border-radius: 5px;
+
+    &:hover {
+      background-color: #f2f2f3;
+      color: rgb(0, 0, 0);
+    }
+  }
+  &__menu-btn-icon {
+    font-size: 18px;
+  }
+  &__body {
+    height: 100%;
+    padding: 60px 5px 46px 5px;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+  &__search-input-wrapper {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 40px;
+    border-radius: 3px;
+    font-size: 16px;
+    border-radius: 25px;
+    border: 2px solid rgba(204, 199, 199, 0.088);
+    background-color: rgba(177, 170, 170, 0.313);
+
+    &--active {
+      border: 2px solid rgb(51,144,236);
+      background-color: rgb(255, 255, 255);
+
+      & .chats-page__search-icon {
+        color: rgb(51,144,236);
+      }
+    }
+  }
+  &__search-icon {
+    font-size: 22px;
+    color: rgb(112,117,121, 0.7);
+  }
+  &__search-input {
+    flex: 1 0 0;
+    background-color: transparent;
+
+    &::placeholder {
+      color: rgb(112,117,121, 0.7);
+    }
+  }
+  &__loader, &__chats {
+    margin-top: 10px;
+  }
+  &__loader {
+  }
+  &__chats {
+    flex: 1 0 0;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  &__footer {
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 36px;
+    background-color: rgb(238, 238, 168);
+    // box-shadow: 0 0 5px rgba(0, 0, 0, 0.142);
+    border-top: 1px solid rgba(0, 0, 0, 0.183);
+  }
+  &__footer-online-count-label {
+    font-weight: 500;
+    font-size: 15px;
+  }
+  &__refresh-btn {
+    font-size: 22px;
+  }
+}

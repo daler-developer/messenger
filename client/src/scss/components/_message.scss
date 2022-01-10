@@ -1,0 +1,54 @@
+.message {
+  align-self: flex-start;
+  display: inline-grid;
+  grid-template-areas:
+    '.      display-name'
+    'avatar body        ';
+  column-gap: 4px;
+  max-width: 60%;
+  user-select: none;
+
+  &--sent-by-current-user {
+    grid-template-areas:
+      'display-name .     '
+      'body         avatar';
+    align-self: flex-end;
+
+    & .message__body {
+      background-color: #dcf8c6;
+    }
+  }
+  &__avatar {
+    grid-area: avatar;
+    width: 30px;
+    aspect-ratio: 1 / 1;
+    cursor: pointer;
+  }
+  &__body {
+    grid-area: body;
+    padding: 5px;
+    background-color: rgb(255, 255, 255);
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+  }
+  &__text {
+    font-size: 14px;
+  }
+  &__created-at {
+    text-align: end;
+    color: grey;
+    font-size: 11px;
+  }
+  &__display-name {
+    font-weight: 500;
+    padding: 0 6px 0 3px;
+    grid-area: display-name;
+    font-size: 12px;
+  }
+  &__img {
+    align-self: stretch;
+    border: 1px solid #000;
+  }
+}

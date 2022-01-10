@@ -1,0 +1,19 @@
+.full-screen-loader {
+  @include flex-center;
+  background-color: white;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+
+  &__loader {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: transparent;
+    border: 4px solid grey;
+    border-left-color: transparent;
+    animation: spinner-rotate 1s infinite;
+  }
+}

@@ -1,0 +1,25 @@
+.messenger-layout {
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.823);
+  height: 100vh;
+
+  &__body {
+    @include push--auto;
+    max-width: 350px;
+    width: 100%;
+    height: 70vh;
+    background-color: rgb(255, 255, 255);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+}
+
+@include mq('phablet') {
+  .messenger-layout {
+
+    &__body {
+      max-width: none;
+      height: 100%;
+    }
+  }
+}

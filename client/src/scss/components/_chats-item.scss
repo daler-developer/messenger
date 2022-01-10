@@ -1,0 +1,95 @@
+.chats-item {
+  padding: 4px;
+  display: grid;
+  grid-template-areas:
+    'avatar-wrapper displayName menu-btn-wrapper'
+    'avatar-wrapper lastMessage menu-btn-wrapper';
+  grid-template-columns: min-content 1fr min-content;
+  column-gap: 6px;
+  row-gap: 4px;
+  border-radius: 3px;
+  cursor: pointer;
+  
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.279);
+  }
+  &:hover {
+    background-color: rgba(244, 244, 245, 0.748);
+  }
+  &--hidden {
+    display: none;
+  }
+  &__avatar-wrapper {
+    grid-area: avatar-wrapper;
+    align-self: center;
+    position: relative;
+    height: 46px;
+    aspect-ratio: 1 / 1;
+  }
+  &__display-name {
+    grid-area: displayName;
+    align-self: end;
+    font-weight: 600;
+  }
+  &__last-message {
+    grid-area: lastMessage;
+    align-self: start;
+    font-size: 15px;
+    color: rgb(112,117,121);
+  }
+  &__display-name, &__last-message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &__open-menu-btn-wrapper {
+    grid-area: menu-btn-wrapper;
+    align-self: center;
+    padding-right: 5px;
+    position: relative;
+  }
+  &__avatar {
+    width: 100%;
+    height: 100%;
+  }
+  &__avatar-dot {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    background-color: rgb(10, 198, 48);
+    border: 3px solid rgb(255, 255, 255);
+    z-index: 100;
+  }
+  &__open-menu-btn {
+    font-size: 22px;
+    display: block;
+  }
+  &__popup-menu {
+    display: flex;
+    flex-direction: column;
+    min-width: 150px;
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+  &__menu-btn {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    font-size: 17px;
+    color: black;
+
+    &:hover {
+      background-color: rgb(244,244,245);
+    }
+  }
+  &__menu-btn-icon {
+    color: rgb(112,117,121);
+    font-size: 22px;
+  }
+}

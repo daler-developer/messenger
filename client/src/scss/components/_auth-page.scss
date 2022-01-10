@@ -1,0 +1,88 @@
+.auth-page {
+  @include flex-center;
+  background-color: rgb(201, 199, 199);
+  min-height: 100vh;
+  padding: 10px;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    max-width: 350px;
+    width: 100%;
+    padding: 0 10px 10px;
+    border-radius: 3px;
+    overflow: hidden;
+    background-color: white;
+    user-select: none;
+  }
+  &__title {
+    @include flex-center;
+    height: 40px;
+    font-size: 18px;
+    text-align: center;
+  }
+  &__error-label {
+    margin-top: 3px;
+    font-size: 11px;
+    color: #FF4D4F;
+  }
+  &__input-group {
+    display: flex;
+    height: 34px;
+    font-size: 16px;
+
+    &:not(:first-of-type) {
+      margin-top: 5px;
+    }
+  }
+  &__input {
+    padding: 10px;
+    flex: 1 0 0;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border: 1px solid rgb(217, 217, 217);
+    
+    &::placeholder {
+      color: rgb(196, 194, 194);
+      font-weight: 400;
+    }
+    &:focus {
+      border: 1px solid #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, .2);
+    }
+    &--error {
+      border-color: #FF4D4F;
+    }
+  }
+  &__icon-wrapper {
+    @include flex-center;
+    height: 100%;
+    color: rgb(196, 194, 194);
+    aspect-ratio: 1 / 1;
+    border: 1px solid rgb(217, 217, 217);
+    border-left: none;
+    font-size: 22px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+  }
+  &__icon {
+  }
+  &__submit-btn {
+    border-radius: 3px;
+    margin-top: 30px;
+    background-color: #1890ff;
+    color: white;
+    font-size: 18px;
+    padding: 5px;
+  }
+  &__footer {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 14px;
+    color: #1890ff;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
