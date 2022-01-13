@@ -1,0 +1,43 @@
+.chats-item {
+  display: flex;
+  padding: 3px;
+  
+  &__left {
+    display: grid;
+    column-gap: 10px;
+    grid-template-areas:
+      'avatar displayName'
+      'avatar lastMessage';
+  }
+  &__avatar-wrapper {
+    position: relative;
+    align-self: center;
+    grid-area: avatar;
+    height: 40px;
+    aspect-ratio: 1 / 1;
+  }
+  &__avatar {
+    width: 100%;
+    height: 100%;
+  }
+  &__green-dot {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    background-color: rgb(36, 230, 36);
+    z-index: 100;
+  }
+  &__display-name {
+    grid-area: displayName;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  &__last-message {
+    grid-area: lastMessage;
+    font-size: 13px;
+    color: grey;
+  }
+}

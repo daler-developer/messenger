@@ -1,0 +1,42 @@
+.chats-page {
+  height: 100%;
+  position: relative;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    height: 40px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.353);
+    background-color: white;
+  }
+  &__title {
+    font-size: 16px;
+    font-weight: 900;
+  }
+  &__menu-btn {
+    font-size: 22px;
+  }
+  &__body {
+    padding: 50px 5px 5px 5px;
+    display: flex;
+    flex-direction: column;
+  }
+  &__search-input {
+    height: 30px;
+    padding: 0 10px;
+    background-color: rgba(0, 0, 0, 0.088);
+    border-radius: 3px;
+  }
+  &__chats {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+  }
+}

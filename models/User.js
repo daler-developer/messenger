@@ -10,6 +10,18 @@ const userSchema = new mongoose.Schema({
   password: {
     type: 'string',
     required: true
+  },
+  displayName: {
+    type: 'string',
+    required: [true, 'display name is required']
+  },
+  avatarUrl: {
+    type: 'string',
+    required: false
+  },
+  bio: {
+    type: 'string',
+    required: false
   }
 })
 

@@ -6,7 +6,7 @@ import User from '../../models/User.js'
 
 const register = async (req, res) => {
   try {
-    const { username, password } = req.body
+    const { username, password, displayName } = req.body
 
     const candidate = await User.findOne({ username })
 
@@ -16,7 +16,7 @@ const register = async (req, res) => {
 
     const hashed = bcryptjs.hashSync(password, 10)
 
-    const user = new User({ username, password: hashed })
+    const user = new User({ username, password: hashed, displayName })
 
     const errors = user.validateSync()
 
@@ -34,7 +34,7 @@ const register = async (req, res) => {
 
     const token = jwt.sign({ username: user.username }, 'jwt_secret', { expiresIn: '2 days' })
 
-    return res.status(202).json({ user, token })
+    return res.status(201).json({ user, token })
 
   } catch (e) {
     return res.status(500).json({ message: 'Unknown error' })

@@ -1,0 +1,15 @@
+.messenger-page {
+  padding: 10px;
+  background-color: rgb(145, 147, 147);
+  min-height: 100vh;
+
+  &__body {
+    @include push--auto;
+    max-width: 350px;
+    width: 100%;
+    height: 70vh;
+    background-color: white;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+}

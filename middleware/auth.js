@@ -6,7 +6,7 @@ export default async (req, res, next) => {
   const token = req.get('auth-token')
 
   if (!token) {
-    return res.status(402).json({ message: 'Not authenticated' })
+    return res.status(401).json({ message: 'Not authenticated' })
   }
 
   try {
@@ -25,12 +25,12 @@ export default async (req, res, next) => {
 
       return next()
     } else {
-      return res.status(400).json({ message: 'Not authenticated' })
+      return res.status(401).json({ message: 'Not authenticated' })
     }
     
 
   } catch (e) {
     console.log(e)
-    return res.status(400).json({ message: 'Not authenticated' })
+    return res.status(401).json({ message: 'Not authenticated' })
   }
 }

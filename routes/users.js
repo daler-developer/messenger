@@ -5,6 +5,10 @@ import validation from '../middleware/validation.js'
 import login from '../controllers/users/login.js'
 import register from '../controllers/users/register.js'
 import loginWithToken from '../controllers/users/loginWithToken.js'
+import getUser from '../controllers/users/getUser.js'
+import getUsers from '../controllers/users/getUsers.js'
+import auth from '../middleware/auth.js'
+import updateUser from '../controllers/users/updateUser.js'
 
 
 const router = new express.Router()
@@ -56,11 +60,45 @@ router.post(
       .notEmpty().withMessage('empty password').bail()
       .isLength({ min: 6 }).withMessage('too short').bail()
       .isLength({ max: 15 }).withMessage('too long').bail()
+    ,
+    validator.body('displayName')
+    .exists().withMessage('no displayName provided').bail()
+    .isString().withMessage('displayName must be string').trim().bail()
+    .notEmpty().withMessage('empty displayName').bail()
+    .isLength({ min: 6 }).withMessage('too short').bail()
+    .isLength({ max: 15 }).withMessage('too long').bail()
   ],
   [
     validation
   ],
   register
+)
+
+router.get(
+  '/:_id',
+  [],
+  getUser
+)
+
+router.get(
+  '/',
+  [auth],
+  [
+    validator.query('excludeCurrent')
+      .if(validator.query('excludeCurrent').exists())
+      .customSanitizer((v) => v === 'yes' ? true : false)
+  ],
+  getUsers
+)
+
+router.put(
+  '/:_id',
+  [auth],
+  [
+    
+  ],
+  [validation],
+  updateUser
 )
 
 export default router

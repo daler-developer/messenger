@@ -6,7 +6,7 @@ const validation = (req, res, next) => {
     const errors = validator.validationResult(req)
 
     if (!errors.isEmpty()) {
-      return res.status(400).json({ message: 'Invalid inputs' })
+      return res.status(400).json({ message: 'Invalid inputs', errors: errors.errors })
     }
 
     return next()
