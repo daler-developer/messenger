@@ -25,6 +25,13 @@ app.use(cors())
 app.use('/api/users', usersRouter)
 app.use('/api/messages', messagesRouter)
 
+app.use(express.static(path.join(__dirname, 'client/build')))
+
+app.get('/*', (req, res) => {
+  return res.sendFile(path.join(__dirname, 'client/build', 'index.html'))
+})
+
+
 
 const start = async () => {
   try {
