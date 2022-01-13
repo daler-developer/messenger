@@ -30,7 +30,7 @@ const start = async () => {
   try {
     await mongoose.connect('mongodb+srv://dalersaidov:2000909k@cluster-for-learning.uecly.mongodb.net/messanger-mern?retryWrites=true&w=majority')
     
-    httpServer.listen(4000)
+    httpServer.listen(process.env.PORT || 4000)
     console.log('listening')
   } catch (e) {
     console.log('db error', e)
