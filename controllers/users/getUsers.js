@@ -3,13 +3,21 @@ import User from '../../models/User.js'
 
 const getUsers = async (req, res) => {
   try {
-    const { excludeCurrent } = req.query
+    const { excludeCurrent, limit, exclude } = req.query
     const { _id } = req.user
 
     const users = User.find()
 
     if (excludeCurrent) { 
       users.where('_id').ne(_id)
+    }
+
+    if (exclude) {
+      users.where('_id').nin(exclude)
+    }
+
+    if (limit) {
+      users.limit(limit)
     }
 
     users.exec((errors, result) => {

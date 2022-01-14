@@ -87,6 +87,16 @@ router.get(
     validator.query('excludeCurrent')
       .if(validator.query('excludeCurrent').exists())
       .customSanitizer((v) => v === 'yes' ? true : false)
+    ,
+    validator.query('limit')
+      .if(validator.query('limit').exists())
+      .toInt()
+    ,
+    validator.query('exclude')
+      .if(validator.query('exclude').exists())
+      .customSanitizer((v) => {
+        return JSON.parse(v)
+      })
   ],
   getUsers
 )

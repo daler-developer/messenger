@@ -6,6 +6,7 @@ import { io } from 'socket.io-client'
 import Alert from './Alert'
 import AuthPage from './AuthPage'
 import AuthProtected from './AuthProtected'
+import ChatPage from './ChatPage'
 import ChatsPage from './ChatsPage'
 import MessengerPage from './MessengerPage'
 import ProfilePage from './ProfilePage'
@@ -27,12 +28,13 @@ const App = () => {
   return <>
     <Routes>
       
-      <Route index element={<Navigate to="messenger" />} />
+      <Route index element={<Navigate to="messenger/chats" />} />
 
       <Route path="auth" element={<AuthPage />} />
 
       <Route path="messenger" element={<AuthProtected children={<MessengerPage />} />}>
         <Route path="chats" element={<ChatsPage />} />
+        <Route path="chats/:_id" element={<ChatPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
 

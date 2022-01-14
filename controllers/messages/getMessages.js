@@ -3,7 +3,10 @@ import Message from '../../models/Message.js'
 
 const getMessages = async (req, res) => {
   try {
-    const { communicators } = req.query
+    const { communicatorId } = req.query
+    const currentUserId = req.user._id
+
+    const communicators = [communicatorId, currentUserId]
 
     const messages = await Message.find({ senderId: { $in: communicators }, receiverId: { $in: communicators } })
 

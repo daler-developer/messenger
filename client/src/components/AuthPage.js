@@ -1,12 +1,14 @@
 import { useFormik } from "formik"
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
-import { Link, useNavigate, useSearchParams } from "react-router-dom"
-import { authActions } from "redux/reducers/authReducer"
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom"
+import { authActions, selectCurrentUser, selectIsTryingToLogin } from "redux/reducers/authReducer"
 import Icon from "./Icon"
 import LoadingButton from "./LoadingButton"
 import * as Yup from 'yup'
 import classNames from "classnames"
+import { useSelector } from "react-redux"
+import FullScreenLoader from "./FullScreenLoader"
 
 
 const AuthPage = () => {
@@ -15,6 +17,9 @@ const AuthPage = () => {
   const dispatch = useDispatch()
 
   const navigate = useNavigate()
+
+  const isTryingToLogin = useSelector((state) => selectIsTryingToLogin(state))
+  const currentUser = useSelector((state) => selectCurrentUser(state))
 
   useEffect(() => {
     if (!searchParams.get('tab')) {
@@ -71,6 +76,14 @@ const AuthPage = () => {
       }
     }
   })
+
+  if (isTryingToLogin) {
+    return <FullScreenLoader />
+  }
+
+  if (currentUser) {
+    return <Navigate to="/messenger/chats" />
+  }
 
   return (
     <div className="auth-page">

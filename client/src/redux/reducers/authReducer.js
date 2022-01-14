@@ -74,6 +74,7 @@ const updateProfile = createAsyncThunk('auth/updateProfile', async (props, thunk
 
 const initialState = {
   currentUser: null,
+  isTryingToLogin: false
 }
 
 const authSlice = createSlice({
@@ -91,8 +92,15 @@ const authSlice = createSlice({
     [register.fulfilled](state, { payload }) {
       state.currentUser = payload.data.user
     },
+    [loginWithToken.pending](state, { payload }) {
+      state.isTryingToLogin = true
+    },
     [loginWithToken.fulfilled](state, { payload }) {
       state.currentUser = payload.data.user
+      state.isTryingToLogin = false
+    },
+    [loginWithToken.rejected](state, { payload }) {
+      state.isTryingToLogin = false
     },
     [login.fulfilled](state, { payload }) {
       state.currentUser = payload.data.user
@@ -109,6 +117,10 @@ export const selectCurrentUser = (state) => {
 
 export const selectIsAuthenticated = (state) => {
   return Boolean(state.auth.currentUser)
+}
+
+export const selectIsTryingToLogin = (state) => {
+  return state.auth.isTryingToLogin
 }
 
 export const authActions = authSlice.actions

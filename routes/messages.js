@@ -15,10 +15,6 @@ router.post(
   '/',
   [auth],
   [
-    validator.body('senderId')
-      .exists().withMessage('senderId not given').bail()
-      .trim().notEmpty().withMessage('senderId is empty').bail()
-    ,
     validator.body('receiverId')
       .exists().withMessage('receiverId not given').bail()
       .trim().notEmpty().withMessage('receiverId is empty').bail()
@@ -35,20 +31,9 @@ router.get(
   '/',
   [auth],
   [
-    validator.query('communicators')
-      .exists().withMessage('communicators not given').bail()
-      .custom((v) => {
-        const array = JSON.parse(v)
-
-        if (!Array.isArray(array)) {
-          throw new Error('not array')
-        }
-
-        return true
-      })
-      .customSanitizer((v) => {
-        return JSON.parse(v)
-      })
+    validator.query('communicatorId')
+      .exists().withMessage('receiverId not given').bail()
+      .isString()
   ],
   [validation],
   getMessages

@@ -1,0 +1,12 @@
+.popup-menu {
+  & {
+    border-radius: 3px;
+    padding: 4px 0;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.381);
+    z-index: z("popup-menu");
+  }
+  &--hidden {
+    visibility: hidden;
+  }
+}

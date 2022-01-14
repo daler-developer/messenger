@@ -1,48 +1,51 @@
 import { useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
-import { useSearchParams } from "react-router-dom"
-import { selectCurrentUser } from "redux/reducers/authReducer"
-import { selectUsers, usersActions } from "redux/reducers/usersReducer"
-import { io } from "socket.io-client"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { authActions, selectCurrentUser } from "redux/reducers/authReducer"
+import { selectUsersByIncludesDisplayName, selectUsersFetchingStatus, selectUsersOnline, usersActions } from "redux/reducers/usersReducer"
 import ChatsItem from "./ChatsItem"
 import Icon from "./Icon"
+import PopupMenu from "./PopupMenu"
 
 const ChatsPage = () => {
-  const [usersOnline, setUsersOnline] = useState([])
+  const [isPopupMenuHidden, setIsPopupMenuHidden] = useState(true)
 
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const users = useSelector((state) => selectUsers(state))
+  const filteredUsers = useSelector((state) => selectUsersByIncludesDisplayName(state, searchParams.get('search') || ''))
   const currentUser = useSelector((state) => selectCurrentUser(state))
+  const usersFetchingStatus = useSelector((state) => selectUsersFetchingStatus(state))
+  const usersOnlineList = useSelector((state) => selectUsersOnline(state))
 
-  useEffect(() => {
-    loadUsers()
-    initSocket()
-  }, [])
+  const navigate = useNavigate()
 
   const dispatch = useDispatch()
 
-  const initSocket = () => {
-    const socket = io('/')
-
-    socket.emit('sendUser', currentUser._id)
-
-    socket.on('getUsersOnline', (users) => {
-      console.log(users)
-      setUsersOnline(users)
-    })
-
-  }
-
   const isUserOnline = (user) => {
-    const isOnline = Boolean(usersOnline.find((userOnline) => userOnline.userId === user._id))
+    const isOnline = Boolean(usersOnlineList.find((userOnline) => userOnline.userId === user._id))
 
     return isOnline
   }
 
-  const loadUsers = async () => {
-    await dispatch(usersActions.fetchUsers({ excludeCurrent: true }))
+  const handlePopupMenuClose = () => {
+    setIsPopupMenuHidden(true)
+  }
+
+  const handleOpenPopupMenuBtnClick = () => {
+    setIsPopupMenuHidden(false)
+  }
+
+  const handleLogoutBtnClick = () => {
+    localStorage.removeItem('auth-token')
+
+    dispatch(authActions.logout())
+
+    navigate('/auth?tab=login')
+  }
+
+  const handleViewProfileBtnClick = () => {
+    navigate(`/messenger/profile?userId=${currentUser._id}`)
   }
 
   return (
@@ -56,10 +59,25 @@ const ChatsPage = () => {
           Messenger
         </h1>
 
-
-        <button type="button" className="chats-page__menu-btn">
-          <Icon>more_vert</Icon>
-        </button>
+        <div className="chats-page__header-popup-menu-wrapper">
+          <button type="button" className="chats-page__menu-btn" onClick={handleOpenPopupMenuBtnClick}>
+            <Icon>more_vert</Icon>
+          </button>
+          <PopupMenu 
+            onClose={handlePopupMenuClose} 
+            isHidden={isPopupMenuHidden} 
+            className="chats-page__header-popup-menu"
+          >
+            <button type="button" className="chats-page__popup-menu-btn" onClick={handleLogoutBtnClick}>
+              <Icon>logout</Icon>
+              <span>Logout</span>
+            </button>
+            <button type="button" className="chats-page__popup-menu-btn" onClick={handleViewProfileBtnClick}>
+              <Icon>account_circle</Icon>
+              <span>Profile</span>
+            </button>
+          </PopupMenu>
+        </div>
 
       </div>
       {/* Header */}
@@ -76,15 +94,22 @@ const ChatsPage = () => {
           onChange={(e) => setSearchParams({ search: e.target.value })}
         />
 
-        <div className="chats-page__chats">
-          {users.map((user, i) => (
-            <ChatsItem
-              key={i}
-              user={user}
-              isOnline={isUserOnline(user)}
-            />
-          ))}
-        </div>
+        {usersFetchingStatus === 'loading' && (
+          <div className="chats-page__loader" />
+        )}
+
+        {usersFetchingStatus === 'loaded' && (
+          <div className="chats-page__chats">
+            {filteredUsers.map((user, i) => (
+              <ChatsItem
+                key={i}
+                user={user}
+                isOnline={isUserOnline(user)}
+              />
+            ))}
+          </div>
+        )}
+
 
       </div>
       {/* Body */}

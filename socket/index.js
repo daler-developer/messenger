@@ -25,6 +25,14 @@ const startSocket = (httpServer) => {
 
       io.emit('getUsersOnline', usersOnline)
     })
+
+    socket.on('sendMessage', ({ message, receiverId }) => {
+      const receiver = usersOnline.find((u) => u.userId === receiverId)
+      if (receiver) {
+        console.log('send')
+        io.to(receiver.socketId).emit('sendMessage', message)
+      }
+    })
   })
 }
 
