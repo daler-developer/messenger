@@ -31,7 +31,10 @@ const usersSlice = createSlice({
     },
     setUsers(state, { payload }) {
       state.list = payload
-    }
+    },
+    addUsers(state, { payload }) {
+      state.list.push(...payload)
+    },
   },
   extraReducers: {
     [fetchUsers.pending](state, { payload }) {

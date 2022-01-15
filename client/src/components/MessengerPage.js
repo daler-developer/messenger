@@ -32,7 +32,7 @@ const MessengerPage = () => {
     try {
       const { data } = await dispatch(usersActions.fetchUsers({ excludeCurrent, limit, exclude })).unwrap()
 
-      dispatch(usersActions.setUsers(data.users))
+      dispatch(usersActions.addUsers(data.users))
       
     } catch (e) {
       

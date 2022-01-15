@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
 import { selectCurrentUser } from "redux/reducers/authReducer"
 import { messagesActions, selectMessages } from "redux/reducers/messagesReducer"
-import { selectUserById } from "redux/reducers/usersReducer"
+import { selectUserById, selectUsersOnline } from "redux/reducers/usersReducer"
 import socket from "socket"
 import Avatar from "./Avatar"
 import Icon from "./Icon"
@@ -50,6 +50,7 @@ const ChatPage = () => {
   const messages = useSelector((state) => selectMessages(state))
   const currentUser = useSelector((state) => selectCurrentUser(state))
   const user = useSelector((state) => selectUserById(state, params._id))
+  const usersOnline = useSelector((state) => selectUsersOnline(state))
 
   const dispatch = useDispatch()
 
@@ -91,7 +92,7 @@ const ChatPage = () => {
         </div>
 
         <div className="chat-page__online-status">
-          Online
+          {usersOnline.find((userOnline) => userOnline.userId === user._id) ? 'Online' : 'Offline'}
         </div>
 
         <div className="chat-page__menu-btn-wrapper">

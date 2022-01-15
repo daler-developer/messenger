@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { authActions, selectCurrentUser } from "redux/reducers/authReducer"
 import { selectUsersByIncludesDisplayName, selectUsersFetchingStatus, selectUsersOnline, usersActions } from "redux/reducers/usersReducer"
+import socket from "socket"
 import ChatsItem from "./ChatsItem"
 import Icon from "./Icon"
 import PopupMenu from "./PopupMenu"
@@ -32,12 +33,14 @@ const ChatsPage = () => {
     setIsPopupMenuHidden(true)
   }
 
-  const handleOpenPopupMenuBtnClick = () => {
+  const handleOpenPopupMenuBtnClick = (e) => {
     setIsPopupMenuHidden(false)
   }
 
   const handleLogoutBtnClick = () => {
     localStorage.removeItem('auth-token')
+
+    // socket.disconnect()
 
     dispatch(authActions.logout())
 

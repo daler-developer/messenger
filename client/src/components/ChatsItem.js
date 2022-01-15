@@ -15,7 +15,9 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
     setIsPopupMenuHidden(true)
   }
 
-  const handleOpenPopupMenuBtnClick = () => {
+  const handleOpenPopupMenuBtnClick = (e) => {
+    e.stopPropagation()
+    
     setIsPopupMenuHidden(false)
   }
 
