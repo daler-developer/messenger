@@ -1,6 +1,7 @@
 .chat-page {
   position: relative;
   height: 100%;
+  background-image: url("../../assets/bg-1.png");
 
   &__header {
     position: absolute;
@@ -12,14 +13,15 @@
     padding: 5px;
     display: grid;
     grid-template-areas:
-      'go-back-btn avatar display-name  menu-btn-wrapper'
-      'go-back-btn avatar online-status menu-btn-wrapper';
+      'go-back-btn avatar title     menu-wrapper'
+      'go-back-btn avatar sub-title menu-wrapper';
     grid-template-columns: min-content auto 1fr min-content;
     grid-template-rows: 1fr 1fr;
     column-gap: 5px;
     row-gap: 3px;
-    background-color: white;
+    background-color: rgb(255, 255, 255);
     z-index: 100;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.142);
 
     & > * {
 
@@ -29,28 +31,51 @@
     grid-area: go-back-btn;
     align-self: center;
     font-size: 22px;
+    width: 30px;
+    height: 30px;
   }
   &__avatar {
     grid-area: avatar;
     align-self: stretch;
+    height: 100%;
     aspect-ratio: 1 / 1;
   }
-  &__display-name {
-    grid-area: display-name;
+  &__title {
+    grid-area: title;
     align-self: end;
     line-height: 1;
     font-weight: 600;
   }
-  &__online-status {
-    grid-area: online-status;
+  &__sub-title {
+    grid-area: sub-title;
     align-self: start;
     line-height: 1;
-    font-size: 12px;
-    color: grey;
+    font-size: 13px;
   }
-  &__menu-btn-wrapper {
-    grid-area: menu-btn-wrapper;
+  &__title, &__sub-title {
+    @include make-ellipsis;
+  }
+  &__online-status-label {
+    color: rgb(51,144,236);
+  }
+  &__offline-status-label {
+    color: rgb(112,117,121);
+  }
+  &__menu-wrapper {
+    grid-area: menu-wrapper;
     align-self: center;
+  }
+  &__open-menu-btn {
+    display: block;
+    font-size: 24px;
+  }
+  &__menu {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 150px;
   }
   &__body {
     height: 100%;
@@ -71,7 +96,7 @@
     width: 100%;
     height: 40px;
     padding: 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.728);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.142);
     background-color: white;
   }
   &__text-input {
@@ -81,8 +106,8 @@
   &__send-message-btn {
     height: 100%;
     aspect-ratio: 1 / 1;
-    background-color: green;
-    color: white;
+    color: rgb(51,144,236);
+    font-size: 24px;
     border-radius: 50%;
   }
   &__loader {

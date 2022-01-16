@@ -50,6 +50,10 @@ textarea {
 button {
   cursor: pointer;
   user-select: none;
+
+  &:disabled {
+    opacity: 0.8;
+  }
 }
 
 img {

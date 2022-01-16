@@ -17,7 +17,6 @@ const PopupMenu = ({ children, isHidden, className, onClose }) => {
       className={classNames('popup-menu', { 'popup-menu--hidden': isHidden }, className)}
       ref={rootRef}
       onClick={(e) => e.stopPropagation()}
-      onMouseMove={(e) => e.stopPropagation()}
     >
       {children}
     </div>

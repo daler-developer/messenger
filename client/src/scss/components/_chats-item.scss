@@ -20,7 +20,7 @@
     grid-area: avatar-wrapper;
     align-self: center;
     position: relative;
-    height: 50px;
+    height: 46px;
     aspect-ratio: 1 / 1;
   }
   &__display-name {
@@ -32,7 +32,7 @@
   &__last-message {
     grid-area: lastMessage;
     align-self: start;
-    font-size: 14px;
+    font-size: 15px;
     color: rgb(112,117,121);
   }
   &__display-name, &__last-message {

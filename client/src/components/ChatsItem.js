@@ -7,6 +7,7 @@ import { usersActions } from 'redux/reducers/usersReducer'
 import Avatar from './Avatar'
 import Icon from './Icon'
 import PopupMenu from './PopupMenu'
+import PopupMenuBtn from './PopupMenuBtn'
 
 
 const ChatsItem = ({ user, lastMessage, isOnline }) => {
@@ -27,7 +28,7 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
   }
 
   const handleViewProfileBtnClick = () => {
-    navigate(`/messenger/profile?userId=${user._id}`)
+    navigate(`/messenger/profile/${user._id}`)
   }
 
   const handleHideUserBtnClick = () => {
@@ -43,7 +44,7 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
         
       <div className="chats-item__avatar-wrapper">
         <Avatar
-          src={user.avatarUrl}
+          user={user}
           className="chats-item__avatar"
           isOnline={isOnline}
         />
@@ -62,14 +63,12 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
           <Icon>more_vert</Icon>
         </button>
         <PopupMenu className="chats-item__popup-menu" isHidden={isPopupMenuHidden} onClose={handlePopupMenuClose}>
-          <button type="button" className="chats-item__menu-btn" onClick={handleViewProfileBtnClick}>
-            <Icon className="chats-item__menu-btn-icon">account_circle</Icon>
-            <span>Profile</span>
-          </button> 
-          <button type="button" className="chats-item__menu-btn" onClick={handleHideUserBtnClick}>
-            <Icon className="chats-item__menu-btn-icon">visibility_off</Icon>
-            <span>Hide</span>
-          </button> 
+          <PopupMenuBtn icon="account_circle" onClick={handleViewProfileBtnClick}>
+            Profile
+          </PopupMenuBtn>
+          <PopupMenuBtn icon="visibility_off" onClick={handleHideUserBtnClick}>
+            Hide
+          </PopupMenuBtn>
         </PopupMenu>
       </div>
       

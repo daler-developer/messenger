@@ -9,7 +9,7 @@ const Icon = ({ className, variant, children }) => {
       case 'outlined':
         return 'material-icons-outlined'
       case 'filled':
-        return 'material-icons-filled'
+        return 'material-icons'
     }
   }
 

@@ -35,7 +35,7 @@ const App = () => {
       <Route path="messenger" element={<AuthProtected children={<MessengerPage />} />}>
         <Route path="chats" element={<ChatsPage />} />
         <Route path="chats/:_id" element={<ChatPage />} />
-        <Route path="profile" element={<ProfilePage />} />
+        <Route path="profile/:_id" element={<ProfilePage />} />
       </Route>
 
     </Routes>

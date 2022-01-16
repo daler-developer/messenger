@@ -11,6 +11,7 @@ import Icon from "./Icon"
 import Loader from "./Loader"
 import PopupMenu from "./PopupMenu"
 import logoImg from 'assets/logo.jpg'
+import PopupMenuBtn from "./PopupMenuBtn"
 
 
 const ChatsPage = () => {
@@ -54,7 +55,7 @@ const ChatsPage = () => {
   }
 
   const handleViewProfileBtnClick = () => {
-    navigate(`/messenger/profile?userId=${currentUser._id}`)
+    navigate(`/messenger/profile/${currentUser._id}`)
   }
 
   const handleSearchInputFocus = () => {
@@ -87,14 +88,12 @@ const ChatsPage = () => {
             isHidden={isPopupMenuHidden} 
             className="chats-page__menu"
           >
-            <button type="button" className="chats-page__menu-btn" onClick={handleLogoutBtnClick}>
-              <Icon className="chats-page__menu-btn-icon">logout</Icon>
-              <span>Logout</span>
-            </button>
-            <button type="button" className="chats-page__menu-btn" onClick={handleViewProfileBtnClick}>
-              <Icon className="chats-page__menu-btn-icon">person</Icon>
-              <span>Profile</span>
-            </button>
+            <PopupMenuBtn icon="logout" onClick={handleLogoutBtnClick}>
+              Logout
+            </PopupMenuBtn>
+            <PopupMenuBtn icon="person" onClick={handleViewProfileBtnClick}>
+              Profile
+            </PopupMenuBtn>
           </PopupMenu>
         </div>
 

@@ -6,6 +6,7 @@
     'avatar body        ';
   column-gap: 4px;
   max-width: 60%;
+  user-select: none;
 
   &--sent-by-current-user {
     grid-template-areas:
@@ -21,11 +22,12 @@
     grid-area: avatar;
     width: 30px;
     aspect-ratio: 1 / 1;
+    cursor: pointer;
   }
   &__body {
     grid-area: body;
-    padding: 4px;
-    background-color: lightblue;
+    padding: 5px;
+    background-color: rgb(255, 255, 255);
     border-radius: 3px;
     display: flex;
     flex-direction: column;
@@ -41,8 +43,9 @@
     font-size: 11px;
   }
   &__display-name {
+    font-weight: 500;
+    padding: 0 6px 0 3px;
     grid-area: display-name;
-    font-weight: 600;
     font-size: 12px;
   }
 }

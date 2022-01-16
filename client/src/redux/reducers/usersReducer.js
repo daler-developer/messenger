@@ -16,6 +16,7 @@ const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent,
   }
 })
 
+
 const initialState = {
   list: [],
   fetchingStatus: 'idle', // 'idle', 'loading', 'loaded', 'error'
@@ -40,6 +41,10 @@ const usersSlice = createSlice({
       if (user) {
         user.isHidden = payload.to
       }
+    },
+    updateUser(state, { payload }) {
+      let index = state.list.findIndex((user) => user._id === payload.userId)
+      state.list[index] = payload.newUser
     }
   },
   extraReducers: {
@@ -75,8 +80,9 @@ export const selectUsersOnline = (state) => {
   return state.users.usersOnlineList
 }
 
-export const usersActions = usersSlice.actions
-
-usersActions.fetchUsers = fetchUsers
+export const usersActions = {
+  ...usersSlice.actions,
+  fetchUsers
+}
 
 export default usersSlice.reducer

@@ -1,7 +1,7 @@
 .messenger-page {
   padding: 10px;
-  background-color: rgb(145, 147, 147);
-  min-height: 100vh;
+  background-color: rgba(0, 0, 0, 0.823);
+  height: 100vh;
 
   &__body {
     @include push--auto;
@@ -11,5 +11,15 @@
     background-color: white;
     border-radius: 3px;
     overflow: hidden;
+  }
+}
+
+@include mq('phablet') {
+  .messenger-page {
+
+    &__body {
+      max-width: none;
+      height: 100%;
+    }
   }
 }

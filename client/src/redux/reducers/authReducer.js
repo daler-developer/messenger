@@ -7,7 +7,6 @@ import { usersActions } from './usersReducer'
 
 const login = createAsyncThunk('auth/login', async ({ username, password }, thunkAPI) => {
   try {
-    
     const { data } = await api.post('/users/login', {
       username, password
     })
@@ -18,6 +17,7 @@ const login = createAsyncThunk('auth/login', async ({ username, password }, thun
     return { data }
 
   } catch (e) {
+    alert('error')
     thunkAPI.dispatch(uiActions.openAlert({ type: 'error', text: e.response.data.message }))
 
     return thunkAPI.rejectWithValue({ data: e.response.data })
@@ -60,12 +60,12 @@ const register = createAsyncThunk('auth/register', async ({ username, password, 
   }
 })
 
-const updateProfile = createAsyncThunk('auth/updateProfile', async (props, thunkAPI) => {
+const updateProfile = createAsyncThunk('users/updateProfile', async (props, thunkAPI) => {
   try {
-    const _id = thunkAPI.getState().auth.currentUser._id
+    const _id = thunkAPI.getState().auth.currentUserId
     const { data } = await api.put(`/users/${_id}`, props)
 
-    thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Updated profile' }))
+    thunkAPI.dispatch(usersActions.updateUser({ userId: data.user._id, newUser: data.user }))
 
     return { data }
     
@@ -77,7 +77,6 @@ const updateProfile = createAsyncThunk('auth/updateProfile', async (props, thunk
 })
 
 const initialState = {
-  // currentUser: null,
   currentUserId: null,
   isTryingToLogin: false
 }
@@ -107,9 +106,6 @@ const authSlice = createSlice({
     [login.fulfilled](state, { payload }) {
       state.currentUserId = payload.data.user._id
     },
-    // [updateProfile.fulfilled](state, { payload }) {
-    //   state.currentUser = payload.user
-    // }
   }
 })
 
@@ -125,11 +121,13 @@ export const selectIsTryingToLogin = (state) => {
   return state.auth.isTryingToLogin
 }
 
-export const authActions = authSlice.actions
-
-authActions.login = login
-authActions.loginWithToken = loginWithToken
-authActions.register = register
-// authActions.updateProfile = updateProfile
+export const authActions = {
+  ...authSlice.actions,
+  login,
+  updateProfile,
+  loginWithToken,
+  register,
+  updateProfile
+}
 
 export default authSlice.reducer
