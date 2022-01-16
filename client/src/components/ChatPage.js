@@ -1,14 +1,15 @@
 import classNames from "classnames"
 import { useFormik } from "formik"
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useNavigate, useParams } from "react-router-dom"
-import { selectCurrentUser } from "redux/reducers/authReducer"
-import { messagesActions, selectMessages } from "redux/reducers/messagesReducer"
+import { selectCurrentUserId } from "redux/reducers/authReducer"
+import { messagesActions, selectMessages, selectMessagesFetchingStatus } from "redux/reducers/messagesReducer"
 import { selectUserById, selectUsersOnline } from "redux/reducers/usersReducer"
 import socket from "socket"
 import Avatar from "./Avatar"
 import Icon from "./Icon"
+import Loader from "./Loader"
 import LoadingButton from "./LoadingButton"
 import Message from "./Message"
 
@@ -16,10 +17,26 @@ const ChatPage = () => {
   const params = useParams()
   const navigate = useNavigate()
 
+  const bodyRef = useRef(null)
+
+  const messages = useSelector((state) => selectMessages(state))
+  const messagesFetchingStatus = useSelector((state) => selectMessagesFetchingStatus(state))
+  const user = useSelector((state) => selectUserById(state, params._id))
+  const usersOnline = useSelector((state) => selectUsersOnline(state))
+
   useEffect(() => {
     loadMessages()
     watchSendMessage()
+
+    return () => {
+      dispatch(messagesActions.setMessagesFetchingStatus('idle'))
+      socket.removeAllListeners('sendMessage')
+    }
   }, [])
+
+  useEffect(() => {
+    scrollToDown()
+  }, [messages])
 
   const messageForm = useFormik({
     initialValues: {
@@ -47,15 +64,11 @@ const ChatPage = () => {
     }
   })
 
-  const messages = useSelector((state) => selectMessages(state))
-  const currentUser = useSelector((state) => selectCurrentUser(state))
-  const user = useSelector((state) => selectUserById(state, params._id))
-  const usersOnline = useSelector((state) => selectUsersOnline(state))
-
   const dispatch = useDispatch()
 
   const watchSendMessage = () => {
     socket.on('sendMessage', (message) => {
+      console.log(message)
       dispatch(messagesActions.addMessage(message))
     })
   }
@@ -68,6 +81,10 @@ const ChatPage = () => {
     } catch (e) {
       alert('error')
     }
+  }
+
+  const scrollToDown = () => {
+    bodyRef.current?.scrollTo(0, bodyRef.current?.scrollHeight)
   }
 
   const handleGoBackBtnClick = () => {
@@ -104,17 +121,23 @@ const ChatPage = () => {
 
 
       {/* Body */}
-      <div className="chat-page__body">
-      
-        <div className="chat-page__messages">
-          {messages.map((message) => (
-            <Message
-              key={message._id}
-              data={message}
-              className={classNames('chat-page__message')}
-            />
-          ))}
-        </div>
+      <div className="chat-page__body" ref={bodyRef}>
+
+        {messagesFetchingStatus === 'loading' && (
+          <Loader size="md" color="grey" className="chat-page__loader" />
+        )}
+
+        {messagesFetchingStatus === 'loaded' && (
+          <div className="chat-page__messages">
+            {messages.map((message) => (
+              <Message
+                key={message._id}
+                data={message}
+                className={classNames('chat-page__message')}
+              />
+            ))}
+          </div>
+        )}
 
       </div>
       {/* Body */}

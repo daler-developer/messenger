@@ -1,0 +1,48 @@
+.message {
+  align-self: flex-start;
+  display: inline-grid;
+  grid-template-areas:
+    '.      display-name'
+    'avatar body        ';
+  column-gap: 4px;
+  max-width: 60%;
+
+  &--sent-by-current-user {
+    grid-template-areas:
+      'display-name .     '
+      'body         avatar';
+    align-self: flex-end;
+
+    & .message__body {
+      background-color: #dcf8c6;
+    }
+  }
+  &__avatar {
+    grid-area: avatar;
+    width: 30px;
+    aspect-ratio: 1 / 1;
+  }
+  &__body {
+    grid-area: body;
+    padding: 4px;
+    background-color: lightblue;
+    border-radius: 3px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 4px;
+  }
+  &__text {
+    font-size: 14px;
+    word-break: break-all;
+  }
+  &__created-at {
+    text-align: end;
+    color: grey;
+    font-size: 11px;
+  }
+  &__display-name {
+    grid-area: display-name;
+    font-weight: 600;
+    font-size: 12px;
+  }
+}

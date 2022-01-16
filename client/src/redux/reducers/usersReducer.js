@@ -35,6 +35,12 @@ const usersSlice = createSlice({
     addUsers(state, { payload }) {
       state.list.push(...payload)
     },
+    setIsUserHidden(state, { payload }) {
+      const user = state.list.find((user) => user._id === payload.userId)
+      if (user) {
+        user.isHidden = payload.to
+      }
+    }
   },
   extraReducers: {
     [fetchUsers.pending](state, { payload }) {

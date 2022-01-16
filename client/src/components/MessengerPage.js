@@ -1,8 +1,8 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Outlet } from "react-router-dom"
-import { selectUsersOnline, usersActions } from 'redux/reducers/usersReducer'
-import { selectCurrentUser } from "redux/reducers/authReducer"
+import { selectUserById, selectUsersOnline, usersActions } from 'redux/reducers/usersReducer'
+import { selectCurrentUserId } from "redux/reducers/authReducer"
 import socket from "socket"
 
 
@@ -10,13 +10,24 @@ const MessengerPage = () => {
 
   const dispatch = useDispatch()
 
-  const currentUser = useSelector((state) => selectCurrentUser(state))
+  const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
 
   useEffect(() => {
+    connectSocketIfDisconnected()
     sendCurrentUserToServer()
     watchUsersOnline()
     loadUsers({ excludeCurrent: true })
+
+    return () => {
+      socket.removeAllListeners('getUsersOnline')
+    }
   }, [])
+
+  const connectSocketIfDisconnected = () => {
+    if (socket.disconnected) {
+      socket.connect()
+    }
+  }
 
   const sendCurrentUserToServer = () => {
     socket.emit('sendUser', currentUser._id)

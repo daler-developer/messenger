@@ -1,13 +1,14 @@
 import { useSelector } from "react-redux"
 import { useLocation, Navigate, Route } from "react-router-dom"
-import { selectCurrentUser, selectIsTryingToLogin } from "redux/reducers/authReducer"
+import { selectCurrentUserId, selectIsTryingToLogin } from "redux/reducers/authReducer"
+import { selectUserById } from "redux/reducers/usersReducer"
 import FullScreenLoader from "./FullScreenLoader"
 
 
 const AuthProtected = ({ children }) => {
   let location = useLocation()
 
-  const currentUser = useSelector((state) => selectCurrentUser(state))
+  const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
   const isTryingToLogin = useSelector((state) => selectIsTryingToLogin(state))
 
   if (!currentUser && isTryingToLogin) {

@@ -2,13 +2,14 @@ import { useFormik } from "formik"
 import { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom"
-import { authActions, selectCurrentUser, selectIsTryingToLogin } from "redux/reducers/authReducer"
+import { authActions, selectCurrentUserId, selectIsTryingToLogin } from "redux/reducers/authReducer"
 import Icon from "./Icon"
 import LoadingButton from "./LoadingButton"
 import * as Yup from 'yup'
 import classNames from "classnames"
 import { useSelector } from "react-redux"
 import FullScreenLoader from "./FullScreenLoader"
+import { selectUserById } from "redux/reducers/usersReducer"
 
 
 const AuthPage = () => {
@@ -19,7 +20,7 @@ const AuthPage = () => {
   const navigate = useNavigate()
 
   const isTryingToLogin = useSelector((state) => selectIsTryingToLogin(state))
-  const currentUser = useSelector((state) => selectCurrentUser(state))
+  const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
 
   useEffect(() => {
     if (!searchParams.get('tab')) {
@@ -69,7 +70,7 @@ const AuthPage = () => {
   
           localStorage.setItem('auth-token', data.token)
         }
-
+        
         navigate('/messenger/chats')
       } finally {
         form.resetForm()

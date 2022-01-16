@@ -1,6 +1,9 @@
+import classNames from 'classnames'
 import pt from 'prop-types'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { usersActions } from 'redux/reducers/usersReducer'
 import Avatar from './Avatar'
 import Icon from './Icon'
 import PopupMenu from './PopupMenu'
@@ -10,6 +13,8 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
   const [isPopupMenuHidden, setIsPopupMenuHidden] = useState(true)
 
   const navigate = useNavigate()
+
+  const dispatch = useDispatch()
 
   const handlePopupMenuClose = () => {
     setIsPopupMenuHidden(true)
@@ -26,7 +31,7 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
   }
 
   const handleHideUserBtnClick = () => {
-
+    dispatch(usersActions.setIsUserHidden({ userId: user._id, to: true }))
   }
 
   const handleChatsItemClick = () => {
@@ -34,16 +39,14 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
   }
 
   return (
-    <div className='chats-item' onClick={handleChatsItemClick}>
+    <div className={classNames('chats-item', { 'chats-item--hidden': user.isHidden })} onClick={handleChatsItemClick}>
         
       <div className="chats-item__avatar-wrapper">
         <Avatar
           src={user.avatarUrl}
           className="chats-item__avatar"
+          isOnline={isOnline}
         />
-        {isOnline && (
-          <div className="chats-item__green-dot" />
-        )}
       </div>
 
       <div className="chats-item__display-name">
@@ -60,8 +63,12 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
         </button>
         <PopupMenu className="chats-item__popup-menu" isHidden={isPopupMenuHidden} onClose={handlePopupMenuClose}>
           <button type="button" className="chats-item__menu-btn" onClick={handleViewProfileBtnClick}>
-            <Icon>account_circle</Icon>
+            <Icon className="chats-item__menu-btn-icon">account_circle</Icon>
             <span>Profile</span>
+          </button> 
+          <button type="button" className="chats-item__menu-btn" onClick={handleHideUserBtnClick}>
+            <Icon className="chats-item__menu-btn-icon">visibility_off</Icon>
+            <span>Hide</span>
           </button> 
         </PopupMenu>
       </div>

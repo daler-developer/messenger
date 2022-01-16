@@ -1,10 +1,11 @@
 import pt from 'prop-types'
+import Loader from './Loader'
 
 
 const FullScreenLoader = ({ }) => {
   return (
     <div className="full-screen-loader">
-      <div className="full-screen-loader__loader" />
+      <Loader color="grey" size="lg" />
     </div>
   )
 }

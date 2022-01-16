@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from 'utils/api'
+import { uiActions } from './uiReducer'
 
 
 
@@ -12,7 +13,6 @@ const createMessage = createAsyncThunk('messages/createMessage', async ({ receiv
     return { data }
 
   } catch (e) {
-    console.log('----------------', e.response)
     return thunkAPI.rejectWithValue({ data: e.response.data })
   }
 })
@@ -24,6 +24,8 @@ const fetchMessages = createAsyncThunk('messages/fetchMessages', async ({ commun
     return { data }
 
   } catch (e) {
+    thunkAPI.dispatch(uiActions.openAlert({ type: 'error', text: e.response.data.text }))
+    
     return thunkAPI.rejectWithValue({ data: e.response.data })
   }
 })
@@ -42,6 +44,9 @@ const messagesSlice = createSlice({
     },
     addMessage(state, { payload }) {
       state.list.push(payload)
+    },
+    setMessagesFetchingStatus(state, { payload }) {
+      state.fetchingStatus = payload
     }
   },
   extraReducers: {
@@ -64,10 +69,14 @@ export const selectMessages = (state) => {
   return state.messages.list
 }
 
-export const messagesActions = messagesSlice.actions
+export const selectMessagesFetchingStatus = (state) => {
+  return state.messages.fetchingStatus
+}
 
-messagesActions.createMessage = createMessage
-messagesActions.fetchMessages = fetchMessages
-
+export const messagesActions = {
+  ...messagesSlice.actions,
+  createMessage,
+  fetchMessages
+}
 
 export default messagesSlice.reducer

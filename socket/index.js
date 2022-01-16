@@ -21,6 +21,7 @@ const startSocket = (httpServer) => {
     })
 
     socket.on('disconnect', () => {
+      console.log('disconnected')
       usersOnline = usersOnline.filter((user) => user.socketId !== socket.id)
 
       io.emit('getUsersOnline', usersOnline)
@@ -32,6 +33,10 @@ const startSocket = (httpServer) => {
         console.log('send')
         io.to(receiver.socketId).emit('sendMessage', message)
       }
+    })
+
+    socket.on('message', (message) => {
+      console.log(message)
     })
   })
 }

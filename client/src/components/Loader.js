@@ -1,17 +1,16 @@
 import classNames from "classnames"
 
-const Loader = ({ className, dotClassName }) => {
+
+const Loader = ({ className, size, color }) => {
   return (
-    <div className={classNames('loader', className)}>
-      <div className={dotClassName}></div>
-      <div className={dotClassName}></div>
-      <div className={dotClassName}></div>
-      <div className={dotClassName}></div>
-      <div className={dotClassName}></div>
-      <div className={dotClassName}></div>
-      <div className={dotClassName}></div>
-      <div className={dotClassName}></div>
-    </div>
+    <div
+      className={classNames(
+        'loader', 
+        `loader--size--${size || 'md'}`, 
+        `loader--color--${color || 'grey'}`, 
+        className
+      )}
+    />
   )
 }
 

@@ -3,8 +3,9 @@ import { useEffect, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { Link, useSearchParams } from "react-router-dom"
-import { authActions, selectCurrentUser } from "redux/reducers/authReducer"
+import { authActions, selectCurrentUserId } from "redux/reducers/authReducer"
 import { uiActions } from "redux/reducers/uiReducer"
+import { selectUserById } from "redux/reducers/usersReducer"
 import api from "utils/api"
 import Icon from "./Icon"
 
@@ -19,7 +20,7 @@ const ProfilePage = () => {
 
   const dispatch = useDispatch()
 
-  const currentUser = useSelector((state) => selectCurrentUser(state))
+  const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
 
   useEffect(() => {
     avatarFile && changeAvatar()

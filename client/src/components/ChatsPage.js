@@ -1,21 +1,26 @@
-import { useEffect, useRef, useState } from "react"
+import classNames from "classnames"
+import { useState } from "react"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
-import { authActions, selectCurrentUser } from "redux/reducers/authReducer"
-import { selectUsersByIncludesDisplayName, selectUsersFetchingStatus, selectUsersOnline, usersActions } from "redux/reducers/usersReducer"
+import { authActions, selectCurrentUserId } from "redux/reducers/authReducer"
+import { selectUserById, selectUsersByIncludesDisplayName, selectUsersFetchingStatus, selectUsersOnline, usersActions } from "redux/reducers/usersReducer"
 import socket from "socket"
 import ChatsItem from "./ChatsItem"
 import Icon from "./Icon"
+import Loader from "./Loader"
 import PopupMenu from "./PopupMenu"
+import logoImg from 'assets/logo.jpg'
+
 
 const ChatsPage = () => {
   const [isPopupMenuHidden, setIsPopupMenuHidden] = useState(true)
+  const [isSearchInputWrapperActive, setIsSearchInputWrapperActive] = useState(false)
 
   const [searchParams, setSearchParams] = useSearchParams()
 
   const filteredUsers = useSelector((state) => selectUsersByIncludesDisplayName(state, searchParams.get('search') || ''))
-  const currentUser = useSelector((state) => selectCurrentUser(state))
+  const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
   const usersFetchingStatus = useSelector((state) => selectUsersFetchingStatus(state))
   const usersOnlineList = useSelector((state) => selectUsersOnline(state))
 
@@ -40,15 +45,24 @@ const ChatsPage = () => {
   const handleLogoutBtnClick = () => {
     localStorage.removeItem('auth-token')
 
-    // socket.disconnect()
+    socket.disconnect()
 
-    dispatch(authActions.logout())
+    dispatch(authActions.setCurrentUserId(null))
+    dispatch(usersActions.setUsers([]))
 
     navigate('/auth?tab=login')
   }
 
   const handleViewProfileBtnClick = () => {
     navigate(`/messenger/profile?userId=${currentUser._id}`)
+  }
+
+  const handleSearchInputFocus = () => {
+    setIsSearchInputWrapperActive(true)
+  }
+
+  const handleSearchInputBlur = () => {
+    setIsSearchInputWrapperActive(false)
   }
 
   return (
@@ -62,21 +76,23 @@ const ChatsPage = () => {
           Messenger
         </h1>
 
-        <div className="chats-page__header-popup-menu-wrapper">
-          <button type="button" className="chats-page__menu-btn" onClick={handleOpenPopupMenuBtnClick}>
+        {/* <img src={logoImg} alt="" className="chats-page__logo" /> */}
+
+        <div className="chats-page__menu-wrapper">
+          <button type="button" className="chats-page__open-menu-btn" onClick={handleOpenPopupMenuBtnClick}>
             <Icon>more_vert</Icon>
           </button>
           <PopupMenu 
             onClose={handlePopupMenuClose} 
             isHidden={isPopupMenuHidden} 
-            className="chats-page__header-popup-menu"
+            className="chats-page__menu"
           >
-            <button type="button" className="chats-page__popup-menu-btn" onClick={handleLogoutBtnClick}>
-              <Icon>logout</Icon>
+            <button type="button" className="chats-page__menu-btn" onClick={handleLogoutBtnClick}>
+              <Icon className="chats-page__menu-btn-icon">logout</Icon>
               <span>Logout</span>
             </button>
-            <button type="button" className="chats-page__popup-menu-btn" onClick={handleViewProfileBtnClick}>
-              <Icon>account_circle</Icon>
+            <button type="button" className="chats-page__menu-btn" onClick={handleViewProfileBtnClick}>
+              <Icon className="chats-page__menu-btn-icon">person</Icon>
               <span>Profile</span>
             </button>
           </PopupMenu>
@@ -89,27 +105,36 @@ const ChatsPage = () => {
       {/* Body */}
       <div className="chats-page__body">
 
-        <input 
-          type="text" 
-          className="chats-page__search-input" 
-          placeholder="Search user"
-          value={searchParams.get('search') || ''}
-          onChange={(e) => setSearchParams({ search: e.target.value })}
-        />
+        <div className={classNames('chats-page__search-input-wrapper', { 'chats-page__search-input-wrapper--active': isSearchInputWrapperActive })}>
+          <Icon className="chats-page__search-icon">search</Icon>
+          <input 
+            type="text" 
+            className="chats-page__search-input" 
+            placeholder="Search"
+            value={searchParams.get('search') || ''}
+            onChange={(e) => setSearchParams({ search: e.target.value })}
+            onFocus={handleSearchInputFocus}
+            onBlur={handleSearchInputBlur}
+          />
+        </div>
 
         {usersFetchingStatus === 'loading' && (
-          <div className="chats-page__loader" />
+          <Loader size="md" color="grey" className="chats-page__loader" />
         )}
 
         {usersFetchingStatus === 'loaded' && (
           <div className="chats-page__chats">
-            {filteredUsers.map((user, i) => (
-              <ChatsItem
-                key={i}
-                user={user}
-                isOnline={isUserOnline(user)}
-              />
-            ))}
+            {filteredUsers.map((user, i) => {
+              if (user._id === currentUser._id) return
+
+              return (
+                <ChatsItem
+                  key={i}
+                  user={user}
+                  isOnline={isUserOnline(user)}
+                />
+              )
+            })}
           </div>
         )}
 

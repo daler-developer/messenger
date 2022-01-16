@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from 'utils/api'
 import { uiActions } from './uiReducer'
+import { usersActions } from './usersReducer'
 
 
 
@@ -11,6 +12,7 @@ const login = createAsyncThunk('auth/login', async ({ username, password }, thun
       username, password
     })
 
+    thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Logged in' }))
 
     return { data }
@@ -29,6 +31,7 @@ const loginWithToken = createAsyncThunk('auth/login-with-token', async (token, t
       token
     })
 
+    thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Logged in' }))
 
     return { data }
@@ -45,6 +48,7 @@ const register = createAsyncThunk('auth/register', async ({ username, password, 
       username, password, displayName
     })
 
+    thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Registed' }))
 
     return { data }
@@ -73,7 +77,8 @@ const updateProfile = createAsyncThunk('auth/updateProfile', async (props, thunk
 })
 
 const initialState = {
-  currentUser: null,
+  // currentUser: null,
+  currentUserId: null,
   isTryingToLogin: false
 }
 
@@ -81,42 +86,39 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCurrentUser(state, { payload }) {
-      state.currentUser = payload
-    },
-    logout(state) {
-      state.currentUser = null
+    setCurrentUserId(state, { payload }) {
+      state.currentUserId = payload
     }
   },
   extraReducers: {
     [register.fulfilled](state, { payload }) {
-      state.currentUser = payload.data.user
+      state.currentUserId = payload.data.user._id
     },
     [loginWithToken.pending](state, { payload }) {
       state.isTryingToLogin = true
     },
     [loginWithToken.fulfilled](state, { payload }) {
-      state.currentUser = payload.data.user
+      state.currentUserId = payload.data.user._id
       state.isTryingToLogin = false
     },
     [loginWithToken.rejected](state, { payload }) {
       state.isTryingToLogin = false
     },
     [login.fulfilled](state, { payload }) {
-      state.currentUser = payload.data.user
+      state.currentUserId = payload.data.user._id
     },
-    [updateProfile.fulfilled](state, { payload }) {
-      state.currentUser = payload.user
-    }
+    // [updateProfile.fulfilled](state, { payload }) {
+    //   state.currentUser = payload.user
+    // }
   }
 })
 
-export const selectCurrentUser = (state) => {
-  return state.auth.currentUser
+export const selectCurrentUserId = (state) => {
+  return state.auth.currentUserId
 }
 
 export const selectIsAuthenticated = (state) => {
-  return Boolean(state.auth.currentUser)
+  return Boolean(state.auth.currentUser._id)
 }
 
 export const selectIsTryingToLogin = (state) => {
@@ -128,6 +130,6 @@ export const authActions = authSlice.actions
 authActions.login = login
 authActions.loginWithToken = loginWithToken
 authActions.register = register
-authActions.updateProfile = updateProfile
+// authActions.updateProfile = updateProfile
 
 export default authSlice.reducer
