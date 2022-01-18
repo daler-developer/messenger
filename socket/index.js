@@ -42,6 +42,14 @@ const startSocket = (httpServer) => {
       io.emit('sendUserOnline', userOnline)
     })
 
+    socket.on('sendMessage', ({ message, receiverId }) => {
+      const receiver = usersOnline.find((u) => u.userId === receiverId)
+      if (receiver) {
+        console.log('send')
+        io.to(receiver.socketId).emit('sendMessage', message)
+      }
+    })
+    
     socket.on('disconnect', () => {
       const userOffline = usersOnline.find((user) => user.socketId === socket.id)
 
