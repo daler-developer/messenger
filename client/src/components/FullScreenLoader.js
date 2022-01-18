@@ -5,7 +5,7 @@ import Loader from './Loader'
 const FullScreenLoader = ({ }) => {
   return (
     <div className="full-screen-loader">
-      <Loader color="grey" size="lg" />
+      <Loader color="black" size="lg" />
     </div>
   )
 }

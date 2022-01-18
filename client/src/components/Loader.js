@@ -1,4 +1,5 @@
 import classNames from "classnames"
+import pt from 'prop-types'
 
 
 const Loader = ({ className, size, color }) => {
@@ -12,6 +13,10 @@ const Loader = ({ className, size, color }) => {
       )}
     />
   )
+}
+
+Loader.propTypes = {
+  color: pt.oneOf(['black', 'grey', 'white', 'blue'])
 }
 
 export default Loader

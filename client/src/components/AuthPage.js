@@ -83,7 +83,7 @@ const AuthPage = () => {
   }
 
   if (currentUser) {
-    return <Navigate to="/messenger/chats" />
+    return <Navigate to="/messenger/home" state={{ from: '/auth' }} />
   }
 
   return (

@@ -2,7 +2,7 @@ import classNames from "classnames"
 import { useFormik } from "formik"
 import { useEffect, useRef, useState } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { selectCurrentUserId } from "redux/reducers/authReducer"
 import { messagesActions, selectMessages, selectMessagesFetchingStatus } from "redux/reducers/messagesReducer"
 import { selectUserById, selectUsersOnline } from "redux/reducers/usersReducer"
@@ -124,9 +124,6 @@ const ChatPage = () => {
     bodyRef.current?.scrollTo(0, bodyRef.current?.scrollHeight)
   }
   
-  const handleGoBackBtnClick = () => {
-    navigate('/messenger/chats')
-  }
   const handleOpenMenuBtnClick = () => {
     setIsMenuHidden(false)
   }
@@ -149,6 +146,10 @@ const ChatPage = () => {
     setImage(null)
     imageFileInputRef.current.value = null
   }
+
+  const handleProfileBtnClick = () => {
+    navigate(`/messenger/profile/${user._id}`)
+  }
   
   return (
     <div className="chat-page">
@@ -157,9 +158,9 @@ const ChatPage = () => {
       {/* Header */}
       <div className="chat-page__header">
 
-        <button className="chat-page__go-back-btn" onClick={handleGoBackBtnClick}>
+        <Link className="chat-page__go-back-link" to={'/messenger/home'}>
           <Icon>arrow_back</Icon>
-        </button>
+        </Link>
 
         <Avatar user={user} className="chat-page__avatar" />
 
@@ -181,7 +182,7 @@ const ChatPage = () => {
             <Icon>more_vert</Icon>
           </button>
           <PopupMenu className="chat-page__menu" isHidden={isMenuHidden} onClose={handleMenuClose}>
-            <PopupMenuBtn icon="person" onClick={() => {}}>
+            <PopupMenuBtn icon="person" onClick={handleProfileBtnClick}>
               Profile
             </PopupMenuBtn>
           </PopupMenu>
@@ -195,7 +196,7 @@ const ChatPage = () => {
       <div className="chat-page__body" ref={bodyRef}>
 
         {messagesFetchingStatus === 'loading' && (
-          <Loader size="md" color="grey" className="chat-page__loader" />
+          <Loader size="md" color="black" className="chat-page__loader" />
         )}
 
         {messagesFetchingStatus === 'loaded' && (

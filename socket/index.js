@@ -2,6 +2,7 @@ import { Server } from "socket.io"
 
 
 let usersOnline = []
+let usersTyping = []
 
 const startSocket = (httpServer) => {
   const io = new Server(httpServer, {
@@ -11,33 +12,44 @@ const startSocket = (httpServer) => {
   })
 
   io.on('connection', (socket) => {
-    socket.emit('getUsersOnline', usersOnline)
 
-    socket.on('sendUser', (userId) => {
-      if (!usersOnline.find((user) => user.userId === userId)) {
-        usersOnline.push({ userId, socketId: socket.id})
+    io.emit('sendUsersOnline', usersOnline)
+    io.emit('sendUsersTyping', usersTyping)
+
+    socket.on('sendUserTyping', (userId) => {
+      const userTyping = { userId, socketId: socket.id }
+
+      if (!usersTyping.find((user) => user.userId === userId)) {
+        usersTyping.push(userTyping)
       }
-      io.emit('getUsersOnline', usersOnline)
+
+      io.emit('sendUserTyping', userTyping)
+    })
+
+    socket.on('sendUserNotTyping', (userId) => {
+      const userNotTyping = { userId, socketId: socket.id }
+
+      usersOnline = usersOnline.filter((user) => user.socketId !== socket.id)
+    })
+
+    socket.on('sendUserOnline', (userId) => {
+      const userOnline = { userId, socketId: socket.id }
+
+      if (!usersOnline.find((user) => user.userId === userId)) {
+        usersOnline.push(userOnline)
+      }
+
+      io.emit('sendUserOnline', userOnline)
     })
 
     socket.on('disconnect', () => {
-      console.log('disconnected')
+      const userOffline = usersOnline.find((user) => user.socketId === socket.id)
+
       usersOnline = usersOnline.filter((user) => user.socketId !== socket.id)
 
-      io.emit('getUsersOnline', usersOnline)
+      io.emit('sendUserOffline', userOffline)
     })
 
-    socket.on('sendMessage', ({ message, receiverId }) => {
-      const receiver = usersOnline.find((u) => u.userId === receiverId)
-      if (receiver) {
-        console.log('send')
-        io.to(receiver.socketId).emit('sendMessage', message)
-      }
-    })
-
-    socket.on('message', (message) => {
-      console.log(message)
-    })
   })
 }
 

@@ -137,7 +137,7 @@ const ProfilePage = () => {
 
       <div className="profile-page__header">
         
-        <Link to="/messenger/chats" className="profile-page__go-back-link">
+        <Link to="/messenger/home" className="profile-page__go-back-link">
           <Icon className="profile-page__go-back-icon">arrow_back</Icon>
         </Link>
 

@@ -1,7 +1,7 @@
 .chat-page {
   position: relative;
   height: 100%;
-  background-image: url("../../assets/bg-1.png");
+  background-image: url("../../assets/bg.png");
 
   &__header {
     position: absolute;
@@ -9,30 +9,29 @@
     left: 0;
     width: 100%;
     height: 50px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.728);
     padding: 5px;
     display: grid;
     grid-template-areas:
-      'go-back-btn avatar title     menu-wrapper'
-      'go-back-btn avatar sub-title menu-wrapper';
+      'go-back-link avatar title     menu-wrapper'
+      'go-back-link avatar sub-title menu-wrapper';
     grid-template-columns: min-content auto 1fr min-content;
     grid-template-rows: 1fr 1fr;
     column-gap: 5px;
     row-gap: 3px;
     background-color: rgb(255, 255, 255);
     z-index: 100;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.142);
+    // box-shadow: 0 0 5px rgba(0, 0, 0, 0.142);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.183);
 
     & > * {
 
     }
   }
-  &__go-back-btn {
-    grid-area: go-back-btn;
+  &__go-back-link {
+    padding: 0 4px;
+    grid-area: go-back-link;
     align-self: center;
     font-size: 22px;
-    width: 30px;
-    height: 30px;
   }
   &__avatar {
     grid-area: avatar;
@@ -97,8 +96,9 @@
     width: 100%;
     height: 40px;
     padding: 4px;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.142);
+    // box-shadow: 0 0 5px rgba(0, 0, 0, 0.142);
     background-color: white;
+    border-top: 1px solid rgba(0, 0, 0, 0.183);
   }
   &__text-input {
     flex: 1 0 0;

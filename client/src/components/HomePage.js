@@ -1,10 +1,10 @@
 import classNames from "classnames"
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { authActions, selectCurrentUserId } from "redux/reducers/authReducer"
-import { selectUserById, selectUsersByIncludesDisplayName, selectUsersFetchingStatus, selectUsersOnline, usersActions } from "redux/reducers/usersReducer"
+import { selectIsUsersOnlineStatusWatching, selectUserById, selectUsersByIncludesDisplayName, selectUsersCount, selectUsersFetchingStatus, selectUsersOnline, usersActions } from "redux/reducers/usersReducer"
 import socket from "socket"
 import ChatsItem from "./ChatsItem"
 import Icon from "./Icon"
@@ -13,27 +13,27 @@ import PopupMenu from "./PopupMenu"
 import PopupMenuBtn from "./PopupMenuBtn"
 
 
-const ChatsPage = () => {
+const HomePage = () => {
   const [isPopupMenuHidden, setIsPopupMenuHidden] = useState(true)
   const [isSearchInputWrapperActive, setIsSearchInputWrapperActive] = useState(false)
 
   const [searchParams, setSearchParams] = useSearchParams()
 
+  const usersCount = useSelector((state) => selectUsersCount(state))
   const filteredUsers = useSelector((state) => selectUsersByIncludesDisplayName(state, searchParams.get('search') || ''))
   const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
   const usersFetchingStatus = useSelector((state) => selectUsersFetchingStatus(state))
-  const usersOnlineList = useSelector((state) => selectUsersOnline(state))
+  const usersOnline = useSelector((state) => selectUsersOnline(state))
+  const isUsersOnlineStatusWatching = useSelector((state) => selectIsUsersOnlineStatusWatching(state))
+
+  const usersOnlineCount = useMemo(() => usersOnline.length, [usersOnline])
 
   useEffect(() => {
     if (usersFetchingStatus === 'idle') {
       loadUsers({ excludeCurrent: true })
     }
     watchLastMessages()
-    watchUsersOnline()
-
-    return () => {
-      socket.removeAllListeners('getUsersOnline')
-    }
+    !isUsersOnlineStatusWatching && watchUsersOnlineStatus()
   }, [])
 
   const navigate = useNavigate()
@@ -41,14 +41,20 @@ const ChatsPage = () => {
   const dispatch = useDispatch()
 
   const getIsUserOnline = (user) => {
-    const isOnline = Boolean(usersOnlineList.find((userOnline) => userOnline.userId === user._id))
+    const isOnline = Boolean(usersOnline.find((userOnline) => userOnline.userId === user._id))
 
     return isOnline
   }
 
-  const watchUsersOnline = () => {
-    socket.on('getUsersOnline', (users) => {
-      dispatch(usersActions.setUsersOnlineList(users))
+  const watchUsersOnlineStatus = () => {
+    socket.on('sendUsersOnline', (users) => {
+      dispatch(usersActions.setUsersOnline(users))
+    })
+    socket.on('sendUserOnline', (user) => {
+      dispatch(usersActions.addUserOnline(user))
+    })
+    socket.on('sendUserOffline', (user) => {
+      dispatch(usersActions.removeUserOnline(user.userId))
     })
   }
 
@@ -66,6 +72,8 @@ const ChatsPage = () => {
       
     }
   }
+
+  
 
   const handlePopupMenuClose = () => {
     setIsPopupMenuHidden(true)
@@ -106,24 +114,24 @@ const ChatsPage = () => {
   }
 
   return (
-    <div className="chats-page">
+    <div className="home-page">
       
 
       {/* Header */}
-      <div className="chats-page__header">
+      <div className="home-page__header">
 
-        <h1 className="chats-page__title">
+        <h1 className="home-page__title">
           Home
         </h1>
 
-        <div className="chats-page__menu-wrapper">
-          <button type="button" className="chats-page__open-menu-btn" onClick={handleOpenPopupMenuBtnClick}>
+        <div className="home-page__menu-wrapper">
+          <button type="button" className="home-page__open-menu-btn" onClick={handleOpenPopupMenuBtnClick}>
             <Icon>more_vert</Icon>
           </button>
           <PopupMenu 
             onClose={handlePopupMenuClose} 
             isHidden={isPopupMenuHidden} 
-            className="chats-page__menu"
+            className="home-page__menu"
           >
             <PopupMenuBtn icon="logout" onClick={handleLogoutBtnClick}>
               Logout
@@ -142,13 +150,13 @@ const ChatsPage = () => {
 
 
       {/* Body */}
-      <div className="chats-page__body">
+      <div className="home-page__body">
 
-        <div className={classNames('chats-page__search-input-wrapper', { 'chats-page__search-input-wrapper--active': isSearchInputWrapperActive })}>
-          <Icon className="chats-page__search-icon">search</Icon>
+        <div className={classNames('home-page__search-input-wrapper', { 'home-page__search-input-wrapper--active': isSearchInputWrapperActive })}>
+          <Icon className="home-page__search-icon">search</Icon>
           <input 
             type="text" 
-            className="chats-page__search-input" 
+            className="home-page__search-input" 
             placeholder="Search"
             value={searchParams.get('search') || ''}
             onChange={(e) => setSearchParams({ search: e.target.value })}
@@ -158,11 +166,11 @@ const ChatsPage = () => {
         </div>
 
         {usersFetchingStatus === 'loading' && (
-          <Loader size="md" color="grey" className="chats-page__loader" />
+          <Loader size="md" color="grey" className="home-page__loader" />
         )}
 
         {usersFetchingStatus === 'loaded' && <>
-          <div className="chats-page__chats">
+          <div className="home-page__chats">
             {filteredUsers.map((user, i) => {
               if (user._id === currentUser._id) return
 
@@ -175,9 +183,6 @@ const ChatsPage = () => {
               )
             })}
           </div>
-          <button type="button" className="chats-page__load-more-btn" onClick={handleReloadBtnClick}>
-            <Icon>refresh</Icon>
-          </button>
         </>}
 
 
@@ -185,8 +190,23 @@ const ChatsPage = () => {
       {/* Body */}
 
 
+      {/* Footer */}
+      <div className="home-page__footer">
+
+        <span className="home-page__footer-online-count-label">
+          Online: {usersOnlineCount}/{usersCount}
+        </span>
+
+        <button type="button" className="home-page__refresh-btn" onClick={handleReloadBtnClick}>
+          <Icon>refresh</Icon>
+        </button>
+
+      </div>
+      {/* Footer */}
+
+
     </div>
   )
 }
 
-export default ChatsPage
+export default HomePage

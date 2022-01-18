@@ -7,11 +7,14 @@
   border-radius: 50%;
   animation: spinner-rotate 1s infinite;
 
+  &--color--black {
+    border-color: rgb(31, 33, 42);
+  }
   &--color--grey {
-    border-color: grey;
+    border-color: rgb(128, 128, 128);
   }
   &--color--white {
-    border-color: white;
+    border-color: rgb(255, 255, 255);
   }
   &--color--blue {
     border-color: rgb(51,144,236);

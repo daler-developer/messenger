@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from 'utils/api'
+import { uiActions } from './uiReducer'
 
 
 const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent, limit, exclude }, thunkAPI) => {
@@ -8,9 +9,10 @@ const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent,
     )
 
     return { data }
-
   } catch (e) {
-    console.log(e)
+    thunkAPI.dispatch(uiActions.openAlert({ type: 'error', text: e.response.data.text }))
+
+    return thunkAPI.rejectWithValue({ data: e.respones.data })
   }
 })
 
@@ -18,15 +20,22 @@ const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent,
 const initialState = {
   list: [],
   fetchingStatus: 'idle', // 'idle', 'loading', 'loaded', 'error'
-  usersOnlineList: []
+  usersOnline: [],
+  isUsersOnlineStatusWatching: false
 }
 
 const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {
-    setUsersOnlineList(state, { payload }) {
-      state.usersOnlineList = payload
+    setUsersOnline(state, { payload }) {
+      state.usersOnline = payload
+    },
+    addUserOnline(state, { payload }) {
+      state.usersOnline.push(payload)
+    },
+    removeUserOnline(state, { payload }) {
+      state.usersOnline = state.usersOnline.filter((userOnline) => userOnline.userId !== payload)
     },
     setUsers(state, { payload }) {
       state.list = payload
@@ -49,7 +58,10 @@ const usersSlice = createSlice({
     },
     clearUsersExcept(state, { payload }) {
       state.list = state.list.filter((user) => user._id === payload)
-    }
+    },
+    setIsUsersOnlineStatusWatching(state, { payload }) {
+      state.isUsersOnlineStatusWatching = payload
+    },
   },
   extraReducers: {
     [fetchUsers.pending](state, { payload }) {
@@ -68,6 +80,10 @@ export const selectUsers = (state) => {
   return state.users.list
 }
 
+export const selectUsersCount = (state) => {
+  return state.users.list.length
+}
+
 export const selectUsersFetchingStatus = (state) => {
   return state.users.fetchingStatus
 }
@@ -81,7 +97,11 @@ export const selectUserById = (state, _id) => {
 }
 
 export const selectUsersOnline = (state) => {
-  return state.users.usersOnlineList
+  return state.users.usersOnline
+}
+
+export const selectIsUsersOnlineStatusWatching = (state) => {
+  return state.users.isUsersOnlineStatusWatching
 }
 
 export const usersActions = {
