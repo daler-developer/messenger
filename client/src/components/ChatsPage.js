@@ -1,5 +1,5 @@
 import classNames from "classnames"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
 import { useNavigate, useSearchParams } from "react-router-dom"
@@ -10,7 +10,6 @@ import ChatsItem from "./ChatsItem"
 import Icon from "./Icon"
 import Loader from "./Loader"
 import PopupMenu from "./PopupMenu"
-import logoImg from 'assets/logo.jpg'
 import PopupMenuBtn from "./PopupMenuBtn"
 
 
@@ -25,14 +24,47 @@ const ChatsPage = () => {
   const usersFetchingStatus = useSelector((state) => selectUsersFetchingStatus(state))
   const usersOnlineList = useSelector((state) => selectUsersOnline(state))
 
+  useEffect(() => {
+    if (usersFetchingStatus === 'idle') {
+      loadUsers({ excludeCurrent: true })
+    }
+    watchLastMessages()
+    watchUsersOnline()
+
+    return () => {
+      socket.removeAllListeners('getUsersOnline')
+    }
+  }, [])
+
   const navigate = useNavigate()
 
   const dispatch = useDispatch()
 
-  const isUserOnline = (user) => {
+  const getIsUserOnline = (user) => {
     const isOnline = Boolean(usersOnlineList.find((userOnline) => userOnline.userId === user._id))
 
     return isOnline
+  }
+
+  const watchUsersOnline = () => {
+    socket.on('getUsersOnline', (users) => {
+      dispatch(usersActions.setUsersOnlineList(users))
+    })
+  }
+
+  const watchLastMessages = () => {
+
+  }
+
+  const loadUsers = async ({ excludeCurrent, limit, exclude }) => {
+    try {
+      const { data } = await dispatch(usersActions.fetchUsers({ excludeCurrent, limit, exclude })).unwrap()
+
+      dispatch(usersActions.addUsers(data.users))
+      
+    } catch (e) {
+      
+    }
   }
 
   const handlePopupMenuClose = () => {
@@ -50,6 +82,7 @@ const ChatsPage = () => {
 
     dispatch(authActions.setCurrentUserId(null))
     dispatch(usersActions.setUsers([]))
+    dispatch(usersActions.setUsersFetchingStatus('idle'))
 
     navigate('/auth?tab=login')
   }
@@ -66,6 +99,12 @@ const ChatsPage = () => {
     setIsSearchInputWrapperActive(false)
   }
 
+  const handleReloadBtnClick = () => {
+    dispatch(usersActions.clearUsersExcept(currentUser._id))
+    loadUsers({ excludeCurrent: true })
+    setIsPopupMenuHidden(true)
+  }
+
   return (
     <div className="chats-page">
       
@@ -74,10 +113,8 @@ const ChatsPage = () => {
       <div className="chats-page__header">
 
         <h1 className="chats-page__title">
-          Messenger
+          Home
         </h1>
-
-        {/* <img src={logoImg} alt="" className="chats-page__logo" /> */}
 
         <div className="chats-page__menu-wrapper">
           <button type="button" className="chats-page__open-menu-btn" onClick={handleOpenPopupMenuBtnClick}>
@@ -93,6 +130,9 @@ const ChatsPage = () => {
             </PopupMenuBtn>
             <PopupMenuBtn icon="person" onClick={handleViewProfileBtnClick}>
               Profile
+            </PopupMenuBtn>
+            <PopupMenuBtn icon="restart_alt" onClick={handleReloadBtnClick}>
+              Reload
             </PopupMenuBtn>
           </PopupMenu>
         </div>
@@ -121,7 +161,7 @@ const ChatsPage = () => {
           <Loader size="md" color="grey" className="chats-page__loader" />
         )}
 
-        {usersFetchingStatus === 'loaded' && (
+        {usersFetchingStatus === 'loaded' && <>
           <div className="chats-page__chats">
             {filteredUsers.map((user, i) => {
               if (user._id === currentUser._id) return
@@ -130,12 +170,15 @@ const ChatsPage = () => {
                 <ChatsItem
                   key={i}
                   user={user}
-                  isOnline={isUserOnline(user)}
+                  isOnline={getIsUserOnline(user)}
                 />
               )
             })}
           </div>
-        )}
+          <button type="button" className="chats-page__load-more-btn" onClick={handleReloadBtnClick}>
+            <Icon>refresh</Icon>
+          </button>
+        </>}
 
 
       </div>

@@ -4,10 +4,8 @@ import api from 'utils/api'
 
 const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent, limit, exclude }, thunkAPI) => {
   try {    
-    const { data } = await api.get(`/users?${excludeCurrent ? 'excludeCurrent=yes' : ''}
-      ${limit ? `&limit=${limit}` : ''}
-      ${exclude ? `&exclude=${exclude}` : ''}
-    `)
+    const { data } = await api.get(`/users?${excludeCurrent ? 'excludeCurrent=yes' : ''}${limit ? `&limit=${limit}` : ''}${exclude ? `&exclude=${exclude}` : ''}`
+    )
 
     return { data }
 
@@ -42,9 +40,15 @@ const usersSlice = createSlice({
         user.isHidden = payload.to
       }
     },
+    setUsersFetchingStatus(state, { payload }) {
+      state.fetchingStatus = payload
+    },
     updateUser(state, { payload }) {
       let index = state.list.findIndex((user) => user._id === payload.userId)
       state.list[index] = payload.newUser
+    },
+    clearUsersExcept(state, { payload }) {
+      state.list = state.list.filter((user) => user._id === payload)
     }
   },
   extraReducers: {

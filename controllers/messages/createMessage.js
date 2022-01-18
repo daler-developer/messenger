@@ -3,10 +3,10 @@ import Message from '../../models/Message.js'
 
 const createMessage = async (req, res) => {
   try {
-    const { receiverId, text } = req.body
+    const { receiverId, text, imageUrl } = req.body
     const senderId = req.user._id
 
-    const message = new Message({ receiverId, senderId, text })
+    const message = new Message({ receiverId, senderId, text, imageUrl })
 
     try {
       message.validateSync()

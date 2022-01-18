@@ -16,17 +16,35 @@ import PopupMenu from "./PopupMenu"
 import PopupMenuBtn from "./PopupMenuBtn"
 
 const ChatPage = () => {
+  const [image, setImage] = useState(null)
+  const [imageData, setImageData] = useState(null)
   const [isMenuHidden, setIsMenuHidden] = useState(true)
+  const [isSending, setIsSending] = useState(false)
 
   const params = useParams()
   const navigate = useNavigate()
 
   const bodyRef = useRef(null)
+  const imageFileInputRef = useRef()
 
   const messages = useSelector((state) => selectMessages(state))
   const messagesFetchingStatus = useSelector((state) => selectMessagesFetchingStatus(state))
   const user = useSelector((state) => selectUserById(state, params._id))
   const usersOnline = useSelector((state) => selectUsersOnline(state))
+
+  useEffect(() => {
+    if (image) {
+      const reader = new FileReader()
+
+      reader.readAsDataURL(image)
+  
+      reader.onload = () => {
+        setImageData(reader.result)
+      }
+    } else {
+      setImageData(null)
+    }
+  }, [image])
 
   useEffect(() => {
     loadMessages()
@@ -56,19 +74,30 @@ const ChatPage = () => {
       return errors
     },
     async onSubmit({ text }) {
-      try {
-        const { data } = await dispatch(messagesActions.createMessage({ text: text.trim(), receiverId: user._id })).unwrap()
-        
-        socket.emit('sendMessage', { message: data.message, receiverId: user._id })
-      } catch (e) {
-
-      } finally {
-        messageForm.resetForm()
+      if (image) {
+        sendMessage({ text, receiverId: user._id, imageUrl: imageData })
+      } else {
+        sendMessage({ text, receiverId: user._id })
       }
     }
   })
 
   const dispatch = useDispatch()
+
+  const sendMessage = async ({ text, receiverId, imageUrl }) => {
+    try {
+      setIsSending(true)
+      const { data } = await dispatch(messagesActions.createMessage({ text, receiverId, imageUrl })).unwrap()
+      
+      socket.emit('sendMessage', { message: data.message, receiverId: user._id })
+
+    } catch (e) {
+
+    } finally {
+      setIsSending(false)
+      messageForm.resetForm()
+    }
+  }
 
   const watchSendMessage = () => {
     socket.on('sendMessage', (message) => {
@@ -104,6 +133,21 @@ const ChatPage = () => {
 
   const handleMenuClose = () => {
     setIsMenuHidden(true)
+  }
+
+  const handleAddImageBtnClick = () => {
+    imageFileInputRef.current.click()
+  }
+
+  const handleImageFileInputChange = (e) => {
+    const file = e.target.files[0]
+
+    setImage(file)
+  }
+
+  const handleRemoveImageBtnClick = () => {
+    setImage(null)
+    imageFileInputRef.current.value = null
   }
   
   return (
@@ -173,6 +217,10 @@ const ChatPage = () => {
       {/* Footer */}
       <form className="chat-page__footer" onSubmit={messageForm.handleSubmit}>
 
+        <button type="button" className="chat-page__add-image-btn" onClick={handleAddImageBtnClick}>
+          <Icon>photo_camera</Icon>
+        </button>
+
         <input 
           type="text" 
           placeholder="Message"
@@ -181,18 +229,28 @@ const ChatPage = () => {
         />
 
         <LoadingButton
-          isLoading={messageForm.isSubmitting} 
+          isLoading={isSending} 
           type="submit" 
           className="chat-page__send-message-btn"
           loaderProps={{ color: 'blue' }}
+          disabled={!messageForm.isValid}
         >
           <Icon variant="filled">send</Icon>
         </LoadingButton>
-
+        
+        {imageData && (
+          <div className="chat-page__image-preview-wrapper">
+            <img src={imageData} className="chat-page__image-preview" />
+            <button type="button" className="chat-page__remove-image-btn" onClick={handleRemoveImageBtnClick}>
+              <Icon>close</Icon>
+            </button>
+          </div>
+        )}
       </form>
       {/* Footer */}
 
 
+      <input type="file" onChange={handleImageFileInputChange} ref={imageFileInputRef} hidden />
     </div>
   )
 }

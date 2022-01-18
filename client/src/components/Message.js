@@ -1,5 +1,6 @@
 import classNames from 'classnames'
 import pt from 'prop-types'
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { selectCurrentUserId } from 'redux/reducers/authReducer'
@@ -8,15 +9,14 @@ import Avatar from './Avatar'
 
 
 const Message = ({ data, className }) => {
-
   const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
   const sender = useSelector((state) => selectUserById(state, data.senderId))
 
   const navigate = useNavigate()
 
-  const isCurrentUserSender = () => {
+  const isCurrentUserSender = useMemo(() => {
     return sender._id === currentUser._id
-  }
+  }, [sender._id, currentUser._id])
 
   const getGeneratedTime = () => {
     const createdDate = new Date(Date.parse(data.createdAt))
@@ -31,7 +31,7 @@ const Message = ({ data, className }) => {
   return (
     <div 
       className={classNames('message', 
-        { 'message--sent-by-current-user': isCurrentUserSender() },  
+        { 'message--sent-by-current-user': isCurrentUserSender },  
       )}
     >
       
@@ -54,6 +54,13 @@ const Message = ({ data, className }) => {
         <div className="message__text">
           {data.text}
         </div>
+
+        {data.imageUrl && (
+          <img 
+            src={data.imageUrl}
+            className="messsage__img" 
+          />
+        )}
 
         <div className="message__created-at">
           {getGeneratedTime()}

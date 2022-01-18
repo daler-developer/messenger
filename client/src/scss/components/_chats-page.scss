@@ -63,7 +63,7 @@
     padding: 60px 5px 5px 5px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: auto;
     border: 1px solid #000;
   }
   &__search-input-wrapper {
@@ -76,7 +76,7 @@
     font-size: 16px;
     border-radius: 25px;
     border: 2px solid rgba(204, 199, 199, 0.088);
-    background-color: rgba(177, 170, 170, 0.088);
+    background-color: rgba(177, 170, 170, 0.313);
 
     &--active {
       border: 2px solid rgb(51,144,236);
@@ -99,16 +99,26 @@
       color: rgb(112,117,121, 0.7);
     }
   }
-  &__loader, &__chats {
+  &__loader, &__chats, &__load-more-btn {
     margin-top: 10px;
   }
   &__loader {
   }
   &__chats {
-    flex: 1 0 0;
     display: flex;
     flex-direction: column;
     row-gap: 5px;
-    overflow: auto;
+  }
+  &__load-more-btn {
+    align-self: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 26px;
+    color: rgba(128, 128, 128, 0.721);
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.061);
+    }
   }
 }

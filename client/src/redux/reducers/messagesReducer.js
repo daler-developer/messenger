@@ -4,10 +4,10 @@ import { uiActions } from './uiReducer'
 
 
 
-const createMessage = createAsyncThunk('messages/createMessage', async ({ receiverId, text }, thunkAPI) => {
+const createMessage = createAsyncThunk('messages/createMessage', async ({ receiverId, text, imageUrl }, thunkAPI) => {
   try {
     const { data } = await api.post('/messages', {
-      receiverId, text
+      receiverId, text, imageUrl,
     })
 
     return { data }
@@ -33,6 +33,7 @@ const fetchMessages = createAsyncThunk('messages/fetchMessages', async ({ commun
 const initialState = {
   list: [],
   fetchingStatus: 'idle', // 'idle', 'loading', 'loaded', 'error'
+  lastMessagesList: []
 }
 
 const messagesSlice = createSlice({
@@ -47,7 +48,10 @@ const messagesSlice = createSlice({
     },
     setMessagesFetchingStatus(state, { payload }) {
       state.fetchingStatus = payload
-    }
+    },
+    // setLastMessages(state, { payload }) {
+    //   state.lastMessagesList = payload
+    // }
   },
   extraReducers: {
     [createMessage.fulfilled](state, { payload }) {
@@ -67,6 +71,10 @@ const messagesSlice = createSlice({
 
 export const selectMessages = (state) => {
   return state.messages.list
+}
+
+export const selectLastMessages = (state) => {
+  return state.messages.lastMessagesList
 }
 
 export const selectMessagesFetchingStatus = (state) => {

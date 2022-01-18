@@ -22,6 +22,11 @@ router.post(
     validator.body('text')
       .exists().withMessage('text not given').bail()
       .trim().notEmpty().withMessage('text is empty').bail()
+    ,
+    validator.body('imageUrl')
+      .if(validator.body('imageUrl').exists())
+      .trim().notEmpty().withMessage('text is empty').bail()
+    ,
   ],
   [validation],
   createMessage

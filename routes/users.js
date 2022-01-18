@@ -62,11 +62,11 @@ router.post(
       .isLength({ max: 15 }).withMessage('too long').bail()
     ,
     validator.body('displayName')
-    .exists().withMessage('no displayName provided').bail()
-    .isString().withMessage('displayName must be string').trim().bail()
-    .notEmpty().withMessage('empty displayName').bail()
-    .isLength({ min: 6 }).withMessage('too short').bail()
-    .isLength({ max: 15 }).withMessage('too long').bail()
+      .exists().withMessage('no displayName provided').bail()
+      .isString().withMessage('displayName must be string').trim().bail()
+      .notEmpty().withMessage('empty displayName').bail()
+      .isLength({ min: 6 }).withMessage('too short').bail()
+      .isLength({ max: 15 }).withMessage('too long').bail()
   ],
   [
     validation

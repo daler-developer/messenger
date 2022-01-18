@@ -22,6 +22,10 @@ const messageSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'receiver id is required']
+  },
+  imageUrl: {
+    type: 'string',
+    required: false
   }
 })
 
