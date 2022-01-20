@@ -10,7 +10,6 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.24.0",
     "classnames": "^2.3.1",
-    "cypress": "^9.2.0",
     "firebase": "^9.6.3",
     "formik": "^2.2.9",
     "prop-types": "^15.8.1",

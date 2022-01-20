@@ -1,4 +1,4 @@
-# Todo List(MERN)
+# Messenger(MERN)
 
 Welcome Messenger App! 👋
  
