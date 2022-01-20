@@ -162,7 +162,7 @@ const ChatPage = () => {
           <Icon>arrow_back</Icon>
         </Link>
 
-        <Avatar user={user} className="chat-page__avatar" />
+        <Avatar src={user.avatarUrl} className="chat-page__avatar" />
 
         <div className="chat-page__title">
           {user.displayName}
