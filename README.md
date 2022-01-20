@@ -2,7 +2,7 @@
 
 Welcome Messenger App! 👋
  
-![This is an image](/preview.jpg)
+![This is an image](/preview.png)
 
 # ✨ [Live](https://todo-list-mern-saidov-daler.herokuapp.com/home)
 
