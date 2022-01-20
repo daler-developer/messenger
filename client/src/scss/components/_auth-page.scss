@@ -1,6 +1,6 @@
 .auth-page {
   @include flex-center;
-  background-color: rgb(241, 241, 241);
+  background-color: rgb(201, 199, 199);
   min-height: 100vh;
   padding: 10px;
 
@@ -24,7 +24,7 @@
   &__error-label {
     margin-top: 3px;
     font-size: 11px;
-    color: red;
+    color: #FF4D4F;
   }
   &__input-group {
     display: flex;
@@ -38,20 +38,28 @@
   &__input {
     padding: 10px;
     flex: 1 0 0;
-    border: 1px solid rgba(0, 0, 0, 0.19);
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
-
+    border: 1px solid rgb(217, 217, 217);
+    
+    &::placeholder {
+      color: rgb(196, 194, 194);
+      font-weight: 400;
+    }
+    &:focus {
+      border: 1px solid #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, .2);
+    }
     &--error {
-      border-color: red;
+      border-color: #FF4D4F;
     }
   }
   &__icon-wrapper {
     @include flex-center;
     height: 100%;
-    color: grey;
+    color: rgb(196, 194, 194);
     aspect-ratio: 1 / 1;
-    border: 1px solid rgba(0, 0, 0, 0.19);
+    border: 1px solid rgb(217, 217, 217);
     border-left: none;
     font-size: 22px;
     border-top-right-radius: 3px;
@@ -62,7 +70,7 @@
   &__submit-btn {
     border-radius: 3px;
     margin-top: 30px;
-    background-color: rgb(97, 97, 218);
+    background-color: #1890ff;
     color: white;
     font-size: 18px;
     padding: 5px;
@@ -71,7 +79,7 @@
     margin-top: 10px;
     text-align: center;
     font-size: 14px;
-    color: rgb(97, 97, 218);
+    color: #1890ff;
 
     &:hover {
       text-decoration: underline;

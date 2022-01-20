@@ -14,11 +14,13 @@ const login = createAsyncThunk('auth/login', async ({ username, password }, thun
     thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Logged in' }))
 
+    localStorage.setItem('auth-token', data.token)
+
     return { data }
 
   } catch (e) {
-    alert('error')
-    thunkAPI.dispatch(uiActions.openAlert({ type: 'error', text: e.response.data.message }))
+    const message = e.response.data.message
+    thunkAPI.dispatch(uiActions.openAlert({ type: 'error', text: message }))
 
     return thunkAPI.rejectWithValue({ data: e.response.data })
   }
@@ -51,6 +53,8 @@ const register = createAsyncThunk('auth/register', async ({ username, password, 
     thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Registed' }))
 
+    localStorage.setItem('auth-token', data.token)
+
     return { data }
 
   } catch (e) {
@@ -62,6 +66,7 @@ const register = createAsyncThunk('auth/register', async ({ username, password, 
 
 const updateProfile = createAsyncThunk('users/updateProfile', async (props, thunkAPI) => {
   try {
+    console.log(props)
     const _id = thunkAPI.getState().auth.currentUserId
     const { data } = await api.put(`/users/${_id}`, props)
 

@@ -3,22 +3,21 @@ import pt from 'prop-types'
 import userImg from 'assets/user.png'
 
 
-const Avatar = ({ user, className, imgClassname, isOnline, displayName, onClick, ...rest }) => {
+const Avatar = ({ className, onClick, src, ...rest }) => {
   return (
-    <div className={classNames('avatar', { 'avatar--with-green-dot': isOnline }, className)} onClick={onClick}>
-
-      <img 
-        {...rest}
-        src={user.avatarUrl || userImg}
-        className={classNames('avatar__img', imgClassname)}
-      />
-
-    </div>
+    <img 
+      className={classNames('avatar', className)} 
+      src={src || userImg}
+      onClick={onClick}
+      {...rest}
+    />
   )
 }
 
 Avatar.propTypes = {
-  onClick: pt.func
+  onClick: pt.func,
+  avatarUrl: pt.string,
+  src: pt.string
 }
 
 export default Avatar

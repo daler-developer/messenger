@@ -60,15 +60,10 @@ const AuthPage = () => {
       try {
         if (searchParams.get('tab') === 'register') {
   
-          const { data } = await dispatch(authActions.register({ username, password, displayName })).unwrap()
-  
-          localStorage.setItem('auth-token', data.token)
-  
+          await dispatch(authActions.register({ username, password, displayName })).unwrap()
         } else if (searchParams.get('tab') === 'login') {
-  
-          const { data } = await dispatch(authActions.login({ username, password })).unwrap()
-  
-          localStorage.setItem('auth-token', data.token)
+
+          await dispatch(authActions.login({ username, password })).unwrap()
         }
         
         navigate('/messenger/chats')

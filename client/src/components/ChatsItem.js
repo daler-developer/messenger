@@ -44,10 +44,12 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
         
       <div className="chats-item__avatar-wrapper">
         <Avatar
-          user={user}
+          src={user.avatarUrl}
           className="chats-item__avatar"
-          isOnline={isOnline}
         />
+        {isOnline && (
+          <div className="chats-item__avatar-dot" />
+        )}
       </div>
 
       <div className="chats-item__display-name">

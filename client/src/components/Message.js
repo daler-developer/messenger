@@ -37,7 +37,7 @@ const Message = ({ data, className }) => {
       
 
       {/* Avatar */}
-      <Avatar user={sender} className="message__avatar" onClick={handleAvatarClick} />
+      <Avatar src={sender.avatarUrl} className="message__avatar" onClick={handleAvatarClick} />
       {/* Avatar */}
 
 

@@ -1,9 +1,9 @@
 import classNames from "classnames"
 import { useFormik } from "formik"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useSelector } from "react-redux"
 import { useDispatch } from "react-redux"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import { authActions, selectCurrentUserId } from "redux/reducers/authReducer"
 import { uiActions } from "redux/reducers/uiReducer"
 import { selectUserById, selectUsersOnline, usersActions } from "redux/reducers/usersReducer"
@@ -13,10 +13,12 @@ import Avatar from "./Avatar"
 import Icon from "./Icon"
 import Loader from './Loader'
 import LoadingButton from "./LoadingButton"
+import socket from "socket"
 
 
 const ProfilePage = () => {
   const [isLoadingUser, setIsLoadingUser] = useState(false)
+  const [avatarData, setAvatarData] = useState(null)
   const [avatarFile, setAvatarFile] = useState(null)
   const [isEditFormHidden, setIsEditFormHidden] = useState(true)
 
@@ -52,9 +54,14 @@ const ProfilePage = () => {
       bio: Yup.string()
         .trim()
     }),
-    async onSubmit(v) {
+    async onSubmit({ username, displayName, bio }) {
       try {
-        const { data } = await dispatch(authActions.updateProfile(v)).unwrap()
+        await dispatch(authActions.updateProfile({
+          ...(username !== selectedUser.username && { username }),
+          ...(displayName !== selectedUser.displayName && { displayName }),
+          ...(bio !== selectedUser.bio && { bio }),
+          ...(avatarData && { avatarUrl: avatarData }),
+        })).unwrap()
       } finally {
         editForm.resetForm()
         setIsEditFormHidden(true)
@@ -65,52 +72,42 @@ const ProfilePage = () => {
   const avatarFileInputRef = useRef(null)
 
   const params = useParams()
+  const navigate = useNavigate()
 
   const dispatch = useDispatch()
-
+  
   const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
   const selectedUser = useSelector((state) => selectUserById(state, params._id))
   const usersOnline = useSelector((state) => selectUsersOnline(state))
+  
+  const isCurrentUserSelected = useMemo(() => {
+    return selectedUser._id === currentUser._id 
+  }, [selectedUser._id, currentUser._id ])
 
   useEffect(() => {
-    avatarFile && changeAvatar()
+    if (avatarFile) {
+      generateAvatarData()
+    } else {
+      setAvatarData(null)
+    }
   }, [avatarFile])
 
-  useEffect(() => {
- 
-  }, [])
-
-  const changeAvatar = async () => {
+  const generateAvatarData = async () => {
     const reader = new FileReader()
 
     reader.readAsDataURL(avatarFile)
 
     reader.onload = () => {
-      try {
-        dispatch(authActions.updateProfile({ avatarUrl: reader.result }))
-      } catch(e) {
-
-      } finally {
-        
-      }
+      setAvatarData(reader.result)
     }
   }
 
-  const resetEditForm = () => {
-    editForm.setValues({
-      displayName: '',
-      bio: '',
-      username: ''
-    })
+  const resetForm = () => {
+    editForm.resetForm()
+    setAvatarFile(null)
+    avatarFileInputRef.current.value = null
   }
 
-  const isCurrentUserSelected = () => {
-    return selectedUser._id === currentUser._id
-  }
-
-  const isOnline = () => {
-    return Boolean(usersOnline.find((u) => u.userId === selectedUser._id))
-  }
 
   const handleChangeAvatarBtnClick = () => {
     avatarFileInputRef.current.click()
@@ -127,8 +124,20 @@ const ProfilePage = () => {
   }
 
   const handleCancelBtnClick = () => {
-    resetEditForm()
+    resetForm()
     setIsEditFormHidden(true)
+  }
+
+  const handleLogoutBtnClick = () => {
+    localStorage.removeItem('auth-token')
+
+    socket.disconnect()
+
+    dispatch(authActions.setCurrentUserId(null))
+    dispatch(usersActions.setUsers([]))
+    dispatch(usersActions.setUsersFetchingStatus('idle'))
+
+    navigate('/auth?tab=login')
   }
 
   return (
@@ -145,7 +154,7 @@ const ProfilePage = () => {
           Profile
         </h1>
 
-        {isCurrentUserSelected() && (
+        {isCurrentUserSelected && (
           <button type="button" className="profile-page__update-profile-btn" onClick={handleUpdateProfileBtn}>
             <Icon>edit</Icon>
           </button>
@@ -159,111 +168,134 @@ const ProfilePage = () => {
         {isLoadingUser ? (
           <Loader size="md" color="grey" />
         ) : <>
-          {/* Body header */}
-          <div className="profile-page__body-header">
 
-            <div className="profile-page__avatar-wrapper">
-
-              <Avatar user={selectedUser} className="profile-page__avatar" />
-
-              {isCurrentUserSelected() && (
-                <button type="button" className={classNames('profile-page__change-avatar-btn')} onClick={handleChangeAvatarBtnClick}>
-                  Change
-                </button>
-              )}
-
-            </div>
-
-            <div className="profile-page__title">
-              {selectedUser.displayName}
-            </div>
-            
-            <div className="profile-page__sub-title">
-              {isOnline() && (
-                <span className="profile-page__online-status-label">Online</span>
-              )}
-              {!isOnline() && (
-                <span className="profile-page__offline-status-label">Offline</span>
-              )}
-            </div>
-
+          {/* Avatar */}
+          <div className="profile-page__avatar-wrapper">
+            <Avatar src={selectedUser.avatarUrl} className="profile-page__avatar" />
+            {!isEditFormHidden && (
+              <button type="button" className="profile-page__change-avatar-btn" onClick={handleChangeAvatarBtnClick}>
+                Replace
+              </button>
+            )}
           </div>
-          {/* Body header */}
+          {/* Avatar */}
 
           {isEditFormHidden ? <>
             {/* Username */}
-            <div className="profile-page__username">
-              @{selectedUser.username}
+            <div className="profile-page__grid">
+              <Icon className="profile-page__grid-icon">person</Icon>
+              <div className="profile-page__grid-title">
+                @{selectedUser.username}
+              </div>
+              <div className="profile-page__grid-sub-title">
+                Username
+              </div>
+            </div>
+            {/* Username */}
+
+            {/* Username */}
+            <div className="profile-page__grid">
+              <Icon className="profile-page__grid-icon">badge</Icon>
+              <div className="profile-page__grid-title">
+                {selectedUser.displayName}
+              </div>
+              <div className="profile-page__grid-sub-title">
+                Display name
+              </div>
             </div>
             {/* Username */}
 
             {/* Bio */}
-            {selectedUser.bio ? (
-              <div className="profile-page__bio">
+            {selectedUser.bio && (
+              <p className="profile-page__bio">
                 {selectedUser.bio}
-              </div>
-            ) : (
-              <span>No bio</span>
+              </p>
             )}
             {/* Bio */}
-          </> : <>
+          </> : (
             <form onSubmit={editForm.handleSubmit} className="profile-page__edit-form">
 
               <div className="profile-page__input-wrapper">
-                <label htmlFor="username" className="profile-page__form-label">Username</label>
+                <label htmlFor="username" className="profile-page__form-label">
+                  Username{' '}
+                  <span className="profile-page__error-text">
+                    {editForm.errors.username}
+                  </span>
+                </label>
                 <input 
                   type="text"
                   name="username"
                   id="username"
                   placeholder="Username"
-                  className="profile-page__form-input"
+                  className={classNames('profile-page__form-input', { 'profile-page__form-input--error': editForm.errors.username })}
                   {...editForm.getFieldProps('username')}   
                 />
               </div>
 
               <div className="profile-page__input-wrapper">
-                <label htmlFor="displayName" className="profile-page__form-label">Display name</label>
+                <label htmlFor="displayName" className="profile-page__form-label">
+                  Display name{' '}
+                  <span className="profile-page__error-text">
+                    {editForm.errors.displayName}
+                  </span>
+                </label>
                 <input 
                   type="text"
                   id="displayName"
                   name="displayName"
                   placeholder="Display name"
-                  className="profile-page__form-input"
+                  className={classNames('profile-page__form-input', { 'profile-page__form-input--error': editForm.errors.displayName })}
                   {...editForm.getFieldProps('displayName')}   
                 />
               </div>
 
               <div className="profile-page__input-wrapper">
-                <label htmlFor="bio" className="profile-page__form-label">Bio</label>
+                <label htmlFor="bio" className="profile-page__form-label">
+                  Bio{' '}
+                  <span className="profile-page__error-text">
+                    {editForm.errors.bio}
+                  </span>
+                </label>
                 <input 
                   type="text"
                   name="bio"
                   id="bio"
                   placeholder="Bio"
-                  className="profile-page__form-input"
+                  className={classNames('profile-page__form-input', { 'profile-page__form-input--error': editForm.errors.bio })}
                   {...editForm.getFieldProps('bio')}   
                 />
               </div>
 
-              <div className="profile-page__btns-wrapper">
-                <button type="button" className="profile-page__cancel-btn" onClick={handleCancelBtnClick}>
-                  Cancel
-                </button>  
-                <LoadingButton isLoading={editForm.isSubmitting} type="submit" className="profile-page__submit-btn">
-                  Edit
-                </LoadingButton>
-              </div>
-
             </form>
-          </>}
+          )}
 
 
         </>}
-
-
       </div>
 
+
+      {/* Footer */}
+      {isCurrentUserSelected && (
+        <div className="profile-page__footer">
+          {isEditFormHidden ? (
+            <button type="button" className="profile-page__logout-btn" onClick={handleLogoutBtnClick}>
+              Logout
+            </button>
+          ) : <>
+            <div className="profile-page__footer-two-btns">
+              <button type="button" className="profile-page__cancel-btn" onClick={handleCancelBtnClick}>
+                Cancel
+              </button>
+              <LoadingButton isLoading={editForm.isSubmitting} type="button" className="profile-page__edit-btn" onClick={editForm.handleSubmit}>
+                Edit
+              </LoadingButton>
+            </div>
+          </>}
+        </div>
+      )}
+      {/* Footer */}
       
+
       <input type="file" accept="image/*" hidden ref={avatarFileInputRef} onChange={handleAvatarFileInputChange} />
     </div>
   )

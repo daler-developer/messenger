@@ -46,7 +46,7 @@ const App = () => {
   return <>
     <Routes>
       
-      <Route index element={<Navigate to="messenger/chats" />} />
+      <Route index element={<Navigate to="messenger/home" />} />
 
       <Route path="auth" element={<AuthPage />} />
 
