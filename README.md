@@ -4,7 +4,7 @@ Welcome Messenger App! 👋
  
 ![This is an image](/preview.png)
 
-# ✨ [Live](https://messenger-mern-saidov-daler.herokuapp.com/home)
+# ✨ [Live](https://messenger-mern-daler-saidov.herokuapp.com/home)
 
 ## Stack
  - Front-end: [React](https://reactjs.org/) / [Redux](https://redux.js.org/) / [Sass](https://sass-lang.com/)
