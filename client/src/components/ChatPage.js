@@ -111,13 +111,7 @@ const ChatPage = () => {
   }
   
   const loadMessages = async () => {
-    try {
-      const { data } = await dispatch(messagesActions.fetchMessages({ communicatorId: user._id })).unwrap()
-
-      dispatch(messagesActions.setMessages(data.messages))
-    } catch (e) {
-      alert('error')
-    }
+    dispatch(messagesActions.fetchMessages({ communicatorId: user._id }))
   }
 
   const scrollToDown = () => {

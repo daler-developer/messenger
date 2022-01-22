@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { authActions, selectCurrentUserId } from 'redux/reducers/authReducer'
-import { selectUserById, usersActions } from 'redux/reducers/usersReducer'
+import { selectIsUsersOnlineStatusWatching, selectUserById, usersActions } from 'redux/reducers/usersReducer'
 import socket from 'socket'
 import Alert from './Alert'
 import AuthPage from './AuthPage'
@@ -15,6 +15,7 @@ import ProfilePage from './ProfilePage'
 
 const App = () => {
   const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
+  const isUsersOnlineStatusWatching = useSelector((state) => selectIsUsersOnlineStatusWatching(state))
 
   const dispatch = useDispatch()
 
@@ -22,8 +23,20 @@ const App = () => {
     if (currentUser) {
       socket.connect()
       sendCurrentUserToServer()
+      
+      if (!isUsersOnlineStatusWatching) {
+        watchUsersOnlineStatus()
+        dispatch(usersActions.setIsUsersOnlineStatusWatching(true))
+      }
     } else {
+      socket.removeAllListeners('sendUsersOnline')
+      socket.removeAllListeners('sendUserOnline')
+      socket.removeAllListeners('sendUserOffline')
       socket.disconnect()
+      dispatch(usersActions.setUsers([]))
+      dispatch(usersActions.setUsersOnline([]))
+      dispatch(usersActions.setUsersFetchingStatus('idle'))
+      dispatch(usersActions.setIsUsersOnlineStatusWatching(false))
     }
 
     return () => {
@@ -33,6 +46,18 @@ const App = () => {
   useEffect(() => {
     localStorage.getItem('auth-token') && tryLoginWithToken(localStorage.getItem('auth-token'))
   }, [])
+
+  const watchUsersOnlineStatus = () => {
+    socket.on('sendUsersOnline', (users) => {
+      dispatch(usersActions.setUsersOnline(users))
+    })
+    socket.on('sendUserOnline', (user) => {
+      dispatch(usersActions.addUserOnline(user))
+    })
+    socket.on('sendUserOffline', (user) => {
+      dispatch(usersActions.removeUserOnline(user.userId))
+    })
+  }
 
 
   const sendCurrentUserToServer = () => {

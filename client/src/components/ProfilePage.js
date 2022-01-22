@@ -129,13 +129,9 @@ const ProfilePage = () => {
   }
 
   const handleLogoutBtnClick = () => {
-    localStorage.removeItem('auth-token')
-
-    socket.disconnect()
-
     dispatch(authActions.setCurrentUserId(null))
-    dispatch(usersActions.setUsers([]))
-    dispatch(usersActions.setUsersFetchingStatus('idle'))
+
+    localStorage.removeItem('auth-token')
 
     navigate('/auth?tab=login')
   }

@@ -32,8 +32,6 @@ const HomePage = () => {
     if (usersFetchingStatus === 'idle') {
       loadUsers({ excludeCurrent: true })
     }
-    watchLastMessages()
-    !isUsersOnlineStatusWatching && watchUsersOnlineStatus()
   }, [])
 
   const navigate = useNavigate()
@@ -46,34 +44,9 @@ const HomePage = () => {
     return isOnline
   }
 
-  const watchUsersOnlineStatus = () => {
-    socket.on('sendUsersOnline', (users) => {
-      dispatch(usersActions.setUsersOnline(users))
-    })
-    socket.on('sendUserOnline', (user) => {
-      dispatch(usersActions.addUserOnline(user))
-    })
-    socket.on('sendUserOffline', (user) => {
-      dispatch(usersActions.removeUserOnline(user.userId))
-    })
-  }
-
-  const watchLastMessages = () => {
-
-  }
-
-  const loadUsers = async ({ excludeCurrent, limit, exclude }) => {
-    try {
-      const { data } = await dispatch(usersActions.fetchUsers({ excludeCurrent, limit, exclude })).unwrap()
-
-      dispatch(usersActions.addUsers(data.users))
-      
-    } catch (e) {
-      
-    }
-  }
-
-  
+  const loadUsers = async ({ excludeCurrent }) => {
+    dispatch(usersActions.fetchUsers({ excludeCurrent })).unwrap()
+  }  
 
   const handlePopupMenuClose = () => {
     setIsPopupMenuHidden(true)
@@ -84,13 +57,9 @@ const HomePage = () => {
   }
 
   const handleLogoutBtnClick = () => {
-    localStorage.removeItem('auth-token')
-
-    socket.disconnect()
-
     dispatch(authActions.setCurrentUserId(null))
-    dispatch(usersActions.setUsers([]))
-    dispatch(usersActions.setUsersFetchingStatus('idle'))
+
+    localStorage.removeItem('auth-token')
 
     navigate('/auth?tab=login')
   }
@@ -108,7 +77,6 @@ const HomePage = () => {
   }
 
   const handleReloadBtnClick = () => {
-    dispatch(usersActions.clearUsersExcept(currentUser._id))
     loadUsers({ excludeCurrent: true })
     setIsPopupMenuHidden(true)
   }

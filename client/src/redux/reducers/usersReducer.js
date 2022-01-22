@@ -1,12 +1,20 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from 'utils/api'
 import { uiActions } from './uiReducer'
+import { authActions, selectCurrentUserId } from './authReducer'
 
 
-const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent, limit, exclude }, thunkAPI) => {
+
+
+const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent }, thunkAPI) => {
   try {    
-    const { data } = await api.get(`/users?${excludeCurrent ? 'excludeCurrent=yes' : ''}${limit ? `&limit=${limit}` : ''}${exclude ? `&exclude=${exclude}` : ''}`
+    const { data } = await api.get(`/users?${excludeCurrent ? 'excludeCurrent=yes' : ''}`
     )
+
+    const currenUserId = selectCurrentUserId(thunkAPI.getState())
+
+    thunkAPI.dispatch(usersActions.clearUsersExcept(currenUserId))
+    thunkAPI.dispatch(usersActions.addUsers(data.users))
 
     return { data }
   } catch (e) {
@@ -20,7 +28,7 @@ const fetchUsers = createAsyncThunk('users/fetchUsers', async ({ excludeCurrent,
 const initialState = {
   list: [],
   fetchingStatus: 'idle', // 'idle', 'loading', 'loaded', 'error'
-  usersOnline: [],
+  usersOnlineList: [],
   isUsersOnlineStatusWatching: false
 }
 
@@ -29,13 +37,13 @@ const usersSlice = createSlice({
   initialState,
   reducers: {
     setUsersOnline(state, { payload }) {
-      state.usersOnline = payload
+      state.usersOnlineList = payload
     },
     addUserOnline(state, { payload }) {
-      state.usersOnline.push(payload)
+      state.usersOnlineList.push(payload)
     },
     removeUserOnline(state, { payload }) {
-      state.usersOnline = state.usersOnline.filter((userOnline) => userOnline.userId !== payload)
+      state.usersOnlineList = state.usersOnlineList.filter((userOnline) => userOnline.userId !== payload)
     },
     setUsers(state, { payload }) {
       state.list = payload
@@ -72,9 +80,20 @@ const usersSlice = createSlice({
     },
     [fetchUsers.rejected](state, { payload }) {
       state.fetchingStatus = 'error'
-    }
+    },
+    // [authActions.login.fulfilled](state, { payload }) {
+    //   state.list.push(payload.data.user)
+    // },
+    // [authActions.register.fulfilled](state, { payload }) {
+    //   state.list.push(payload.data.user)
+    // },
+    // [authActions.loginWithToken.fulfilled](state, { payload }) {
+    //   state.list.push(payload.data.user)
+    // },
   }
 })
+
+console.log(authActions)
 
 export const selectUsers = (state) => {
   return state.users.list
@@ -97,7 +116,7 @@ export const selectUserById = (state, _id) => {
 }
 
 export const selectUsersOnline = (state) => {
-  return state.users.usersOnline
+  return state.users.usersOnlineList
 }
 
 export const selectIsUsersOnlineStatusWatching = (state) => {

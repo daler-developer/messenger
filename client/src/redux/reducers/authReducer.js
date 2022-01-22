@@ -11,8 +11,8 @@ const login = createAsyncThunk('auth/login', async ({ username, password }, thun
       username, password
     })
 
-    thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Logged in' }))
+    thunkAPI.dispatch(usersActions.addUsers([data.user]))
 
     localStorage.setItem('auth-token', data.token)
 
@@ -26,15 +26,15 @@ const login = createAsyncThunk('auth/login', async ({ username, password }, thun
   }
 })
 
-const loginWithToken = createAsyncThunk('auth/login-with-token', async (token, thunkAPI) => {
+const loginWithToken = createAsyncThunk('auth/loginWithToken', async (token, thunkAPI) => {
   try {
 
     const { data } = await api.post('/users/login-with-token', {
       token
     })
 
-    thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Logged in' }))
+    thunkAPI.dispatch(usersActions.addUsers([data.user]))
 
     return { data }
     
@@ -50,8 +50,8 @@ const register = createAsyncThunk('auth/register', async ({ username, password, 
       username, password, displayName
     })
 
-    thunkAPI.dispatch(usersActions.addUsers([data.user]))
     thunkAPI.dispatch(uiActions.openAlert({ type: 'success', text: 'Registed' }))
+    thunkAPI.dispatch(usersActions.addUsers([data.user]))
 
     localStorage.setItem('auth-token', data.token)
 
@@ -66,7 +66,6 @@ const register = createAsyncThunk('auth/register', async ({ username, password, 
 
 const updateProfile = createAsyncThunk('users/updateProfile', async (props, thunkAPI) => {
   try {
-    console.log(props)
     const _id = thunkAPI.getState().auth.currentUserId
     const { data } = await api.put(`/users/${_id}`, props)
 
@@ -95,6 +94,9 @@ const authSlice = createSlice({
     }
   },
   extraReducers: {
+    [login.fulfilled](state, { payload }) {
+      state.currentUserId = payload.data.user._id
+    },
     [register.fulfilled](state, { payload }) {
       state.currentUserId = payload.data.user._id
     },
@@ -107,9 +109,6 @@ const authSlice = createSlice({
     },
     [loginWithToken.rejected](state, { payload }) {
       state.isTryingToLogin = false
-    },
-    [login.fulfilled](state, { payload }) {
-      state.currentUserId = payload.data.user._id
     },
   }
 })

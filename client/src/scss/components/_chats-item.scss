@@ -9,7 +9,10 @@
   row-gap: 4px;
   border-radius: 3px;
   cursor: pointer;
-
+  
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.279);
+  }
   &:hover {
     background-color: rgba(244, 244, 245, 0.748);
   }

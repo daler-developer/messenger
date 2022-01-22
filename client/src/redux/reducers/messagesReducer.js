@@ -49,9 +49,6 @@ const messagesSlice = createSlice({
     setMessagesFetchingStatus(state, { payload }) {
       state.fetchingStatus = payload
     },
-    // setLastMessages(state, { payload }) {
-    //   state.lastMessagesList = payload
-    // }
   },
   extraReducers: {
     [createMessage.fulfilled](state, { payload }) {
@@ -64,8 +61,9 @@ const messagesSlice = createSlice({
       state.fetchingStatus = 'error'
     },
     [fetchMessages.fulfilled](state, { payload }) {
+      state.list = payload.data.messages
       state.fetchingStatus = 'loaded'
-    },
+    }
   }
 })
 
