@@ -5,7 +5,8 @@ import userImg from 'assets/user.png'
 
 const Avatar = ({ className, onClick, src, ...rest }) => {
   return (
-    <img 
+    <img
+      role="avatar"
       className={classNames('avatar', className)} 
       src={src || userImg}
       onClick={onClick}
@@ -16,8 +17,8 @@ const Avatar = ({ className, onClick, src, ...rest }) => {
 
 Avatar.propTypes = {
   onClick: pt.func,
-  avatarUrl: pt.string,
-  src: pt.string
+  src: pt.string,
+  className: pt.string
 }
 
 export default Avatar

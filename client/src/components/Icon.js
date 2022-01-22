@@ -14,7 +14,7 @@ const Icon = ({ className, variant, children }) => {
   }
 
   return (
-    <span className={classNames('icon', getTypeClassName(variant || 'outlined'), className)} role="icon">
+    <span role="icon" className={classNames('icon', getTypeClassName(variant || 'outlined'), className)}>
       {children}
     </span>
   )

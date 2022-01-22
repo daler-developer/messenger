@@ -172,7 +172,7 @@ const AuthPage = () => {
 
         <div className="auth-page__footer">
           {searchParams.get('tab') === 'login' && (
-            <Link to="/auth?tab=register">
+            <Link to="/auth?tab=register" role="register-link">
               Don't have an account? Register
             </Link>
           )}
