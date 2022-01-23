@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import Avatar from "components/Avatar"
 import { customRender } from "tests/utils"
 
+
 describe('<Avatar />', () => {
   
   test('should render correctly', () => {

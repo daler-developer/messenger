@@ -14,23 +14,6 @@ const startSocket = (httpServer) => {
   io.on('connection', (socket) => {
 
     io.emit('sendUsersOnline', usersOnline)
-    io.emit('sendUsersTyping', usersTyping)
-
-    socket.on('sendUserTyping', (userId) => {
-      const userTyping = { userId, socketId: socket.id }
-
-      if (!usersTyping.find((user) => user.userId === userId)) {
-        usersTyping.push(userTyping)
-      }
-
-      io.emit('sendUserTyping', userTyping)
-    })
-
-    socket.on('sendUserNotTyping', (userId) => {
-      const userNotTyping = { userId, socketId: socket.id }
-
-      usersOnline = usersOnline.filter((user) => user.socketId !== socket.id)
-    })
 
     socket.on('sendUserOnline', (userId) => {
       const userOnline = { userId, socketId: socket.id }
@@ -45,7 +28,6 @@ const startSocket = (httpServer) => {
     socket.on('sendMessage', ({ message, receiverId }) => {
       const receiver = usersOnline.find((u) => u.userId === receiverId)
       if (receiver) {
-        console.log('send')
         io.to(receiver.socketId).emit('sendMessage', message)
       }
     })

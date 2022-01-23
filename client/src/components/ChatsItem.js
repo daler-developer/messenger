@@ -1,21 +1,28 @@
 import classNames from 'classnames'
 import pt from 'prop-types'
+import { useMemo } from 'react'
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { usersActions } from 'redux/reducers/usersReducer'
+import { selectUsersOnline, usersActions } from 'redux/reducers/usersReducer'
 import Avatar from './Avatar'
 import Icon from './Icon'
 import PopupMenu from './PopupMenu'
 import PopupMenuBtn from './PopupMenuBtn'
 
 
-const ChatsItem = ({ user, lastMessage, isOnline }) => {
+const ChatsItem = ({ user, lastMessage }) => {
   const [isPopupMenuHidden, setIsPopupMenuHidden] = useState(true)
 
   const navigate = useNavigate()
 
   const dispatch = useDispatch()
+
+  const usersOnline = useSelector((state) => selectUsersOnline(state))
+
+  const isOnline = useMemo(() => {
+    return Boolean(usersOnline.find((userOnline) => userOnline.userId === user._id))
+  }, [usersOnline])
 
   const handlePopupMenuClose = () => {
     setIsPopupMenuHidden(true)
@@ -80,7 +87,6 @@ const ChatsItem = ({ user, lastMessage, isOnline }) => {
 
 ChatsItem.propTypes = {
   user: pt.object.isRequired,
-  isOnline: pt.bool.isRequired,
   lastMessage: pt.string
 }
 

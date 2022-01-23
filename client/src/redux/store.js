@@ -7,10 +7,10 @@ import usersReducer from "./reducers/usersReducer"
 
 const store = configureStore({
   reducer: {
-    auth: authReducer,
     ui: uiReducer,
     users: usersReducer,
-    messages: messagesReducer
+    messages: messagesReducer,
+    auth: authReducer,
   }
 })
 

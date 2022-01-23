@@ -22,14 +22,7 @@ const userSchema = new mongoose.Schema({
   bio: {
     type: 'string',
     required: false
-  },
-  lastSeenAt: {
-    type: Date,
-    required: true,
-    default() {
-      return new Date()
-    }
-  } 
+  }
 })
 
 const User = mongoose.model('User', userSchema)

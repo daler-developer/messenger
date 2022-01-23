@@ -29,9 +29,7 @@ const App = () => {
         dispatch(usersActions.setIsUsersOnlineStatusWatching(true))
       }
     } else {
-      socket.removeAllListeners('sendUsersOnline')
-      socket.removeAllListeners('sendUserOnline')
-      socket.removeAllListeners('sendUserOffline')
+      socket.removeAllListeners()
       socket.disconnect()
       dispatch(usersActions.setUsers([]))
       dispatch(usersActions.setUsersOnline([]))
@@ -52,10 +50,10 @@ const App = () => {
       dispatch(usersActions.setUsersOnline(users))
     })
     socket.on('sendUserOnline', (user) => {
-      dispatch(usersActions.addUserOnline(user))
+      dispatch(usersActions.addUserToOnlineList(user))
     })
     socket.on('sendUserOffline', (user) => {
-      dispatch(usersActions.removeUserOnline(user.userId))
+      dispatch(usersActions.removeUserFromOnlineList(user.userId))
     })
   }
 

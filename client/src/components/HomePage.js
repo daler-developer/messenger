@@ -24,7 +24,6 @@ const HomePage = () => {
   const currentUser = useSelector((state) => selectUserById(state, selectCurrentUserId(state)))
   const usersFetchingStatus = useSelector((state) => selectUsersFetchingStatus(state))
   const usersOnline = useSelector((state) => selectUsersOnline(state))
-  const isUsersOnlineStatusWatching = useSelector((state) => selectIsUsersOnlineStatusWatching(state))
 
   const usersOnlineCount = useMemo(() => usersOnline.length, [usersOnline])
 
@@ -37,12 +36,6 @@ const HomePage = () => {
   const navigate = useNavigate()
 
   const dispatch = useDispatch()
-
-  const getIsUserOnline = (user) => {
-    const isOnline = Boolean(usersOnline.find((userOnline) => userOnline.userId === user._id))
-
-    return isOnline
-  }
 
   const loadUsers = async ({ excludeCurrent }) => {
     dispatch(usersActions.fetchUsers({ excludeCurrent })).unwrap()
@@ -146,7 +139,6 @@ const HomePage = () => {
                 <ChatsItem
                   key={i}
                   user={user}
-                  isOnline={getIsUserOnline(user)}
                 />
               )
             })}

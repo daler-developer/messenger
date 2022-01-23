@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import api from 'utils/api'
 import { uiActions } from './uiReducer'
-import { authActions, selectCurrentUserId } from './authReducer'
+import { authActions, selectCurrentUserId } from 'redux/reducers/authReducer'
 
 
 
@@ -39,10 +39,10 @@ const usersSlice = createSlice({
     setUsersOnline(state, { payload }) {
       state.usersOnlineList = payload
     },
-    addUserOnline(state, { payload }) {
+    addUserToOnlineList(state, { payload }) {
       state.usersOnlineList.push(payload)
     },
-    removeUserOnline(state, { payload }) {
+    removeUserFromOnlineList(state, { payload }) {
       state.usersOnlineList = state.usersOnlineList.filter((userOnline) => userOnline.userId !== payload)
     },
     setUsers(state, { payload }) {
@@ -92,8 +92,6 @@ const usersSlice = createSlice({
     // },
   }
 })
-
-console.log(authActions)
 
 export const selectUsers = (state) => {
   return state.users.list
